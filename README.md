@@ -1,16 +1,49 @@
-# React + Vite
+🎲 Project Hilo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+    A web-based Hi-Lo dice statistics application built as an internship project.
+The system allows users to roll three dice, record history, and analyze statistical frequencies such as individual faces, pairs, triples, and sums.
 
-Currently, two official plugins are available:
+📌 Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Project Name: Project Hilo
+Type: Frontend Web Application
+Purpose: Practice React, state management, and UI design for internship-level experience
 
-## React Compiler
+Project Hilo simulates a traditional Hi-Lo dice game and visualizes historical outcomes in a clean, modern UI.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+🚀 Features
 
-## Expanding the ESLint configuration
+🎲 Roll 3 dice randomly
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+✍️ Manual dice input (Entry)
+
+📊 Dice statistics analysis
+
+Individual face frequency (1–6)
+
+Pair combinations
+
+Triple combinations
+
+Sum of dice values
+
+🧮 Percentage calculation per outcome
+
+🗂 Display recent roll history
+
+♻️ Reset all history
+
+🎨 Responsive UI with Tailwind CSS
+
+
+🛠 Tech Stack
+
+React (Functional Components & Hooks)
+
+Vite (Build tool & dev server)
+
+Tailwind CSS (Utility-first CSS framework)
+
+JavaScript (ES6+)
+
+Git & GitHub (Version control)
