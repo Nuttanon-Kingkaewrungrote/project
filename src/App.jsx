@@ -194,30 +194,38 @@ const HiLoStatistics = () => {
       <div className="max-w-2xl mx-auto">
         
         {/* Last Roll Display */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
-          <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4 mb-6">
+
+          {/* Dice + Result */}
+          <div className="flex items-center gap-8 bg-slate-50 border border-slate-200 px-10 py-5 rounded-xl shadow-md flex-1 min-h-[96px]">
+
+            {/* Dice */}
             <div className={`flex gap-3 ${isRolling ? 'animate-pulse' : ''}`}>
               {lastRoll ? (
                 lastRoll.map((d, i) => (
-                  <DiceFace key={i} value={d} size="lg" />
+                  <DiceFace key={i} value={d} size="md" />
                 ))
               ) : (
-                <div className="text-3xl font-bold text-gray-400 py-2">- - -</div>
+                <div className="text-3xl font-bold text-gray-400">- - -</div>
               )}
             </div>
-            
+
+            {/* Result */}
             {lastRoll && (
-              <div className="text-4xl font-bold text-gray-800 border-2 border-gray-300 px-6 py-2 rounded-lg">
+              <div className="text-4xl font-bold text-gray-800  px-6 py-2 rounded-lg">
                 {lastRoll.join('')}
               </div>
             )}
-            
-            <div className="bg-white border-2 border-blue-500 text-blue-600 px-4 py-2 rounded-lg">
-              <div className="text-xs">Count Dice</div>
-              <div className="text-2xl font-bold text-center">{history.length}</div>
-            </div>
           </div>
+
+          {/* Count Dice */}
+          <div className="border border-blue-200 bg-sky-50 text-blue-600 px-10 py-6 rounded-xl shadow-md min-w-[110px]">
+            <div className="text-xs text-center">Count Dice</div>
+            <div className="text-2xl font-bold text-center">{history.length}</div>
+          </div>
+
         </div>
+
 
         {/* Input Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
@@ -246,7 +254,7 @@ const HiLoStatistics = () => {
               onClick={handleEntry}
               className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition-colors"
             >
-              Entry
+              Enter
             </button>
             <button
               onClick={handleRandom}
