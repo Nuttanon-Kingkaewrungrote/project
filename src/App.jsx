@@ -105,12 +105,16 @@ const HiLoStatistics = () => {
     const rows = [];
 
     // Individual faces
+    let faceFirstRow = true;
     for (let i = 1; i <= 6; i++) {
-      rows.push({
-        dice: String(i),
-        label: i === 1 ? 'แต่ละหน้าทั้งหมด' : '',
-        frequency: getFaceFrequency(stats.faceCount[i])
-      });
+      if (stats.faceCount[i] > 0) {
+        rows.push({
+          dice: String(i),
+          label: faceFirstRow ? 'แต่ละหน้าทั้งหมด' : '',
+          frequency: getFaceFrequency(stats.faceCount[i])
+        });
+        faceFirstRow = false;
+      }
     }
 
     // Pairs (sorted by key)
