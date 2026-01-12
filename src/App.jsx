@@ -122,8 +122,9 @@ const HiLoStatistics = () => {
       .sort((a, b) => a[0].localeCompare(b[0]));
     
     pairEntries.forEach((entry, idx) => {
+      const pairFormatted = entry[0].split('').join(',');
       rows.push({
-        dice: entry[0],
+        dice: pairFormatted,
         label: idx === 0 ? 'หน้าที่เกิดขึ้น จับคู่ ทั้งหมด' : '',
         frequency: getFrequency(entry[1])
       });
@@ -300,7 +301,7 @@ const HiLoStatistics = () => {
               {statsRows.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="py-8 text-center text-gray-400">
-                    ยังไม่มีข้อมูล - กดปุ่ม Entry หรือ Random เพื่อเริ่มบันทึก
+                    ยังไม่มีข้อมูล - กดปุ่ม Enter หรือ Random เพื่อเริ่มบันทึก
                   </td>
                 </tr>
               ) : (
