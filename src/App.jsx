@@ -2,11 +2,8 @@ import React, { useState, useCallback } from 'react';
 
 const HiLoStatistics = () => {
   const [history, setHistory] = useState([
-    
-  ]);
-  const [dice1, setDice1] = useState('');
-  const [dice2, setDice2] = useState('');
-  const [dice3, setDice3] = useState('');
+]);
+  const [manualInput, setManualInput] = useState("");
   const [lastRoll, setLastRoll] = useState();
   const [isRolling, setIsRolling] = useState(false);
 
@@ -55,19 +52,24 @@ const HiLoStatistics = () => {
 
   const stats = calculateStats();
 
-  const handleEntry = () => {
-    const d1 = parseInt(dice1);
-    const d2 = parseInt(dice2);
-    const d3 = parseInt(dice3);
+  const handleManualEntrySingle = () => {
+  if (manualInput.length !== 3) {
+    alert("Please enter exactly 3 digits");
+    return;
+  }
 
-    if ([d1, d2, d3].every(d => d >= 1 && d <= 6)) {
-      setHistory(prev => [...prev, [d1, d2, d3]]);
-      setLastRoll([d1, d2, d3]);
-      setDice1('');
-      setDice2('');
-      setDice3('');
-    }
-  };
+  const dice = manualInput.split("").map(Number);
+  if (dice.some(d => d < 1 || d > 6)) {
+    alert("Dice number must be btween 1 and 6")
+    return;
+  }
+
+  // 🔴 สำคัญ: ใช้ history + lastRoll เหมือนเดิม
+  setHistory(prev => [...prev, dice]);
+  setLastRoll(dice);
+
+  setManualInput("");
+};
 
   const handleClear = () => {
     setHistory([]);
@@ -230,32 +232,27 @@ const HiLoStatistics = () => {
         {/* Input Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <div className="flex gap-2 items-center">
-              {[dice1, dice2, dice3].map((val, idx) => (
-                <input
-                  key={idx}
-                  type="number"
-                  min="1"
-                  max="6"
-                  value={idx === 0 ? dice1 : idx === 1 ? dice2 : dice3}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    if (idx === 0) setDice1(v);
-                    else if (idx === 1) setDice2(v);
-                    else setDice3(v);
-                  }}
-                  className="w-12 h-12 text-center text-xl font-bold bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                  placeholder={String(idx + 1)}
-                />
-              ))}
-            </div>
+            <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={manualInput}
+              onChange={(e) => {
+                const v = e.target.value.replace(/\D/g, "");
+                if (v.length <= 3) setManualInput(v);
+              }}
+              placeholder="Enter 3 digits"
+              className="px-6 py-3 text-center text-lg font-bold
+              border border-gray-300 rounded-lg
+              focus:outline-none focus:border-blue-500"
+            />
 
             <button
-              onClick={handleEntry}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition-colors"
+              onClick={handleManualEntrySingle}
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
               Enter
             </button>
+          </div>
             <button
               onClick={handleRandom}
               disabled={isRolling}
@@ -267,7 +264,7 @@ const HiLoStatistics = () => {
               onClick={handleClear}
               className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow transition-colors"
             >
-              Del Hist All
+              Reset
             </button>
           </div>
         </div>
