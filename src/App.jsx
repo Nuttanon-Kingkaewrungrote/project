@@ -194,7 +194,17 @@ const HiLoStatistics = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
-        
+
+        {/* Page Title */}
+        <div className="mb-6 text-center space-y-3">
+          <h1 className="text-3xl font-bold text-gray-800">
+            🎲 Dice Tracker Dashboard
+          </h1>
+        <p className="text-gray-500">
+          Analyze dice frequency patterns from your input data
+        </p>
+      </div>
+
         {/* Last Roll Display */}
         <div className="flex items-center gap-4 mb-6">
 
@@ -231,8 +241,12 @@ const HiLoStatistics = () => {
 
         {/* Input Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <h1 className="px-3 text-3x1 font-bold text-gray-800">
+                Enter dice number
+            </h1>
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <div className="flex items-center gap-2">
+
             <input
               type="text"
               value={manualInput}
@@ -241,7 +255,7 @@ const HiLoStatistics = () => {
                 if (v.length <= 3) setManualInput(v);
               }}
               placeholder="Enter 3 digits"
-              className="px-6 py-3 text-center text-lg font-bold
+              className="px-6 py-2 text-center text-lg font-bold
               border border-gray-300 rounded-lg
               focus:outline-none focus:border-blue-500"
             />
