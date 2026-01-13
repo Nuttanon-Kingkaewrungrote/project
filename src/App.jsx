@@ -238,7 +238,7 @@ const HiLoStatistics = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="mx-auto" style={{width: '734px'}}>
 
         {/* Page Title */}
         <div className="mb-6 text-center space-y-3">
@@ -295,7 +295,7 @@ const HiLoStatistics = () => {
                   if (v.length <= 3) setManualInput(v);
                 }}
                 placeholder="Enter 3 digits"
-                className="px-6 py-2 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="px-14 py-2 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
 
               <button
