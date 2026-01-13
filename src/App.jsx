@@ -109,7 +109,7 @@ const HiLoStatistics = () => {
         if (stats.faceCount[i] > 0) {
           rows.push({
             dice: String(i),
-            label: faceFirstRow ? 'แต่ละหน้าทั้งหมด' : '',
+            label: (faceFirstRow && activeFilter === 'all') ? 'แต่ละหน้าทั้งหมด' : '',
             frequency: getFaceFrequency(stats.faceCount[i]),
             type: 'single'
           });
@@ -128,7 +128,7 @@ const HiLoStatistics = () => {
         const pairFormatted = entry[0].split('').join(',');
         rows.push({
           dice: pairFormatted,
-          label: idx === 0 ? 'หน้าที่เกิดขึ้น จับคู่ ทั้งหมด' : '',
+          label: (idx === 0 && activeFilter === 'all') ? 'หน้าที่เกิดขึ้น จับคู่ ทั้งหมด' : '',
           frequency: getFrequency(entry[1]),
           type: 'pair'
         });
@@ -145,7 +145,7 @@ const HiLoStatistics = () => {
       tripleEntries.forEach((entry, idx) => {
         rows.push({
           dice: entry[0],
-          label: idx === 0 ? 'หน้าที่เกิดขึ้นพร้อมกัน' : '',
+          label: (idx === 0 && activeFilter === 'all') ? 'หน้าที่เกิดขึ้นพร้อมกัน' : '',
           frequency: getFrequency(entry[1]),
           type: 'triple'
         });
@@ -161,7 +161,7 @@ const HiLoStatistics = () => {
       sumEntries.forEach((entry, idx) => {
         rows.push({
           dice: `Sum ${entry[0]}`,
-          label: idx === 0 ? 'ผลรวมของหน้าที่เคยเกิดขึ้น' : '',
+          label: (idx === 0 && activeFilter === 'all') ? 'ผลรวมของหน้าที่เคยเกิดขึ้น' : '',
           frequency: getFrequency(entry[1]),
           type: 'sum'
         });
