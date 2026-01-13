@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 
 const HiLoStatistics = () => {
-  const [history, setHistory] = useState([
-]);
+  const [history, setHistory] = useState([]);
   const [manualInput, setManualInput] = useState("");
   const [lastRoll, setLastRoll] = useState();
   const [isRolling, setIsRolling] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'single', 'pair', 'triple', 'sum'
 
   // Calculate all statistics
   const calculateStats = useCallback(() => {
@@ -53,23 +53,21 @@ const HiLoStatistics = () => {
   const stats = calculateStats();
 
   const handleManualEntrySingle = () => {
-  if (manualInput.length !== 3) {
-    alert("Please enter exactly 3 digits");
-    return;
-  }
+    if (manualInput.length !== 3) {
+      alert("Please enter exactly 3 digits");
+      return;
+    }
 
-  const dice = manualInput.split("").map(Number);
-  if (dice.some(d => d < 1 || d > 6)) {
-    alert("Dice number must be btween 1 and 6")
-    return;
-  }
+    const dice = manualInput.split("").map(Number);
+    if (dice.some(d => d < 1 || d > 6)) {
+      alert("Dice number must be between 1 and 6");
+      return;
+    }
 
-  // 🔴 สำคัญ: ใช้ history + lastRoll เหมือนเดิม
-  setHistory(prev => [...prev, dice]);
-  setLastRoll(dice);
-
-  setManualInput("");
-};
+    setHistory(prev => [...prev, dice]);
+    setLastRoll(dice);
+    setManualInput("");
+  };
 
   const handleClear = () => {
     setHistory([]);
@@ -100,60 +98,75 @@ const HiLoStatistics = () => {
     return `${count}/${history.length} = ${pct}%`;
   };
 
-  // Build unified stats rows
+  // Build unified stats rows with filtering
   const buildStatsRows = () => {
     const rows = [];
 
-    // Individual faces
-    let faceFirstRow = true;
-    for (let i = 1; i <= 6; i++) {
-      if (stats.faceCount[i] > 0) {
-        rows.push({
-          dice: String(i),
-          label: faceFirstRow ? 'แต่ละหน้าทั้งหมด' : '',
-          frequency: getFaceFrequency(stats.faceCount[i])
-        });
-        faceFirstRow = false;
+    // Individual faces (Single)
+    if (activeFilter === 'all' || activeFilter === 'single') {
+      let faceFirstRow = true;
+      for (let i = 1; i <= 6; i++) {
+        if (stats.faceCount[i] > 0) {
+          rows.push({
+            dice: String(i),
+            label: faceFirstRow ? 'แต่ละหน้าทั้งหมด' : '',
+            frequency: getFaceFrequency(stats.faceCount[i]),
+            type: 'single'
+          });
+          faceFirstRow = false;
+        }
       }
     }
 
-    // Pairs (sorted by key)
-    const pairEntries = Object.entries(stats.pairs)
-      .sort((a, b) => a[0].localeCompare(b[0]));
-    
-    pairEntries.forEach((entry, idx) => {
-      const pairFormatted = entry[0].split('').join(',');
-      rows.push({
-        dice: pairFormatted,
-        label: idx === 0 ? 'หน้าที่เกิดขึ้น จับคู่ ทั้งหมด' : '',
-        frequency: getFrequency(entry[1])
+    // Pairs
+    if (activeFilter === 'all' || activeFilter === 'pair') {
+      const pairEntries = Object.entries(stats.pairs)
+        .filter(entry => entry[1] > 0)
+        .sort((a, b) => a[0].localeCompare(b[0]));
+      
+      pairEntries.forEach((entry, idx) => {
+        const pairFormatted = entry[0].split('').join(',');
+        rows.push({
+          dice: pairFormatted,
+          label: idx === 0 ? 'หน้าที่เกิดขึ้น จับคู่ ทั้งหมด' : '',
+          frequency: getFrequency(entry[1]),
+          type: 'pair'
+        });
       });
-    });
+    }
 
-    // Triples (sorted, top occurrences)
-    const tripleEntries = Object.entries(stats.triples)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
-    
-    tripleEntries.forEach((entry, idx) => {
-      rows.push({
-        dice: entry[0],
-        label: idx === 0 ? 'หน้าที่เกิดขึ้นพร้อมกัน' : '',
-        frequency: getFrequency(entry[1])
+    // Triples
+    if (activeFilter === 'all' || activeFilter === 'triple') {
+      const tripleEntries = Object.entries(stats.triples)
+        .filter(entry => entry[1] > 0)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+      
+      tripleEntries.forEach((entry, idx) => {
+        rows.push({
+          dice: entry[0],
+          label: idx === 0 ? 'หน้าที่เกิดขึ้นพร้อมกัน' : '',
+          frequency: getFrequency(entry[1]),
+          type: 'triple'
+        });
       });
-    });
+    }
 
-    // Sums (sorted by sum value)
-    const sumEntries = Object.entries(stats.sums)
-      .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-    
-    sumEntries.forEach((entry, idx) => {
-      rows.push({
-        dice: `Sum ${entry[0]}`,
-        label: idx === 0 ? 'ผลรวมของหน้าที่เคยเกิดขึ้น' : '',
-        frequency: getFrequency(entry[1])
+    // Sums
+    if (activeFilter === 'all' || activeFilter === 'sum') {
+      const sumEntries = Object.entries(stats.sums)
+        .filter(entry => entry[1] > 0)
+        .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+      
+      sumEntries.forEach((entry, idx) => {
+        rows.push({
+          dice: `Sum ${entry[0]}`,
+          label: idx === 0 ? 'ผลรวมของหน้าที่เคยเกิดขึ้น' : '',
+          frequency: getFrequency(entry[1]),
+          type: 'sum'
+        });
       });
-    });
+    }
 
     return rows;
   };
@@ -196,6 +209,25 @@ const HiLoStatistics = () => {
     );
   };
 
+  // Filter button component
+  const FilterButton = ({ label, value }) => {
+    const isActive = activeFilter === value;
+    return (
+      <button
+        onClick={() => setActiveFilter(value)}
+        className={`
+          flex-1 px-6 py-3 font-semibold transition-all duration-200 rounded-lg
+          ${isActive 
+            ? 'bg-blue-500 text-white shadow-md' 
+            : 'bg-white text-blue-500 hover:bg-blue-50'
+          }
+        `}
+      >
+        {label}
+      </button>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
@@ -205,17 +237,15 @@ const HiLoStatistics = () => {
           <h1 className="text-3xl font-bold text-gray-800">
             🎲 Dice Tracker Dashboard
           </h1>
-        <p className="text-gray-500">
-          Analyze dice frequency patterns from your input data
-        </p>
-      </div>
+          <p className="text-gray-500">
+            Analyze dice frequency patterns from your input data
+          </p>
+        </div>
 
         {/* Last Roll Display */}
         <div className="flex items-center gap-4 mb-6">
-
           {/* Dice + Result */}
           <div className="flex items-center gap-8 bg-slate-50 border border-slate-200 px-10 py-5 rounded-xl shadow-md flex-1 min-h-[96px]">
-
             {/* Dice */}
             <div className={`flex gap-3 ${isRolling ? 'animate-pulse' : ''}`}>
               {lastRoll ? (
@@ -229,7 +259,7 @@ const HiLoStatistics = () => {
 
             {/* Result */}
             {lastRoll && (
-              <div className="text-4xl font-bold text-gray-800  px-6 py-2 rounded-lg">
+              <div className="text-4xl font-bold text-gray-800 px-6 py-2 rounded-lg">
                 {lastRoll.join('')}
               </div>
             )}
@@ -240,38 +270,33 @@ const HiLoStatistics = () => {
             <div className="text-xs text-center">Count Dice</div>
             <div className="text-2xl font-bold text-center">{history.length}</div>
           </div>
-
         </div>
-
 
         {/* Input Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
-          <h1 className="px-3 text-3x1 font-bold text-gray-800">
-                Enter dice number
-            </h1>
+          <h2 className="px-3 text-lg font-bold text-gray-800 mb-3">
+            Enter dice numbers
+          </h2>
           <div className="flex flex-wrap items-center justify-center gap-2">
             <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={manualInput}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, "");
+                  if (v.length <= 3) setManualInput(v);
+                }}
+                placeholder="Enter 3 digits"
+                className="px-6 py-2 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
 
-            <input
-              type="text"
-              value={manualInput}
-              onChange={(e) => {
-                const v = e.target.value.replace(/\D/g, "");
-                if (v.length <= 3) setManualInput(v);
-              }}
-              placeholder="Enter 3 digits"
-              className="px-6 py-2 text-center text-lg font-bold
-              border border-gray-300 rounded-lg
-              focus:outline-none focus:border-blue-500"
-            />
-
-            <button
-              onClick={handleManualEntrySingle}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              Enter
-            </button>
-          </div>
+              <button
+                onClick={handleManualEntrySingle}
+                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold shadow transition-colors"
+              >
+                Enter
+              </button>
+            </div>
             <button
               onClick={handleRandom}
               disabled={isRolling}
@@ -288,34 +313,48 @@ const HiLoStatistics = () => {
           </div>
         </div>
 
+        {/* Filter Buttons */}
+        <div className="bg-white rounded-xl shadow-lg p-2 mb-6 border border-gray-200">
+          <div className="flex gap-1">
+            <FilterButton label="All" value="all" />
+            <FilterButton label="Single" value="single" />
+            <FilterButton label="Pair" value="pair" />
+            <FilterButton label="Triple" value="triple" />
+            <FilterButton label="Sum" value="sum" />
+          </div>
+        </div>
+
         {/* Stats Table */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
           <table className="w-full">
             <thead>
               <tr className="bg-blue-600 text-white">
-                <th className="py-3 px-4 text-left font-semibold">Dice</th>
-                <th className="py-3 px-4 text-left font-semibold">Frequency</th>
+                <th className="py-3 px-4 text-center font-semibold border-r border-white w-1/2">Dice</th>
+                <th className="py-3 px-4 text-center font-semibold w-1/2">Frequency</th>
               </tr>
             </thead>
             <tbody>
               {statsRows.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="py-8 text-center text-gray-400">
-                    ยังไม่มีข้อมูล - กดปุ่ม Enter หรือ Random เพื่อเริ่มบันทึก
+                    {history.length === 0 
+                      ? 'ยังไม่มีข้อมูล - กดปุ่ม Enter หรือ Random เพื่อเริ่มบันทึก'
+                      : 'ไม่มีข้อมูลในหมวดนี้'
+                    }
                   </td>
                 </tr>
               ) : (
                 statsRows.map((row, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50' : 'bg-white'}>
-                    <td className="py-2 px-4">
-                      <div className="flex items-center gap-2">
+                  <tr key={idx} className={`${idx % 2 === 0 ? 'bg-blue-50' : 'bg-white'} border-b border-gray-200`}>
+                    <td className="py-3 px-4 border-r border-gray-200 w-1/2">
+                      <div className="flex items-center justify-center gap-1">
                         <span className="font-mono font-semibold text-gray-700">{row.dice}</span>
                         {row.label && (
                           <span className="text-gray-400 text-sm">// {row.label}</span>
                         )}
                       </div>
                     </td>
-                    <td className="py-2 px-4 text-gray-600">{row.frequency}</td>
+                    <td className="py-3 px-4 text-gray-600 text-center w-1/2">{row.frequency}</td>
                   </tr>
                 ))
               )}
@@ -326,7 +365,7 @@ const HiLoStatistics = () => {
         {/* History Strip */}
         {history.length > 0 && (
           <div className="mt-6 bg-white rounded-xl shadow-lg p-4 border border-gray-200">
-            <div className="text-sm text-gray-500 mb-2">Resent History :</div>
+            <div className="text-sm text-gray-500 mb-2">Recent History:</div>
             <div className="flex flex-wrap gap-2">
               {history.slice(-15).reverse().map((roll, idx) => {
                 const sum = roll.reduce((a, b) => a + b, 0);
