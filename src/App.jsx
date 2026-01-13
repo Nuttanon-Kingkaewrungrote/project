@@ -5,7 +5,8 @@ const HiLoStatistics = () => {
   const [manualInput, setManualInput] = useState("");
   const [lastRoll, setLastRoll] = useState();
   const [isRolling, setIsRolling] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'single', 'pair', 'triple', 'sum'
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Calculate all statistics
   const calculateStats = useCallback(() => {
@@ -17,17 +18,14 @@ const HiLoStatistics = () => {
     };
 
     history.forEach(roll => {
-      // Count individual faces (each roll counts once per unique face)
       const uniqueFaces = [...new Set(roll)];
       uniqueFaces.forEach(face => {
         stats.faceCount[face]++;
       });
 
-      // Calculate sum
       const sum = roll.reduce((a, b) => a + b, 0);
       stats.sums[sum] = (stats.sums[sum] || 0) + 1;
 
-      // Count all possible pairs (combinations of 2 from 3 dice, unique pairs only)
       const sorted = [...roll].sort((a, b) => a - b);
       const allPairs = [
         [sorted[0], sorted[1]].sort((a, b) => a - b).join(''),
@@ -35,14 +33,12 @@ const HiLoStatistics = () => {
         [sorted[1], sorted[2]].sort((a, b) => a - b).join('')
       ];
       
-      // Remove duplicate pairs
       const uniquePairs = [...new Set(allPairs)];
       
       uniquePairs.forEach(pairKey => {
         stats.pairs[pairKey] = (stats.pairs[pairKey] || 0) + 1;
       });
 
-      // Count triples
       const tripleKey = sorted.join('');
       stats.triples[tripleKey] = (stats.triples[tripleKey] || 0) + 1;
     });
@@ -98,18 +94,33 @@ const HiLoStatistics = () => {
     return `${count}/${history.length} = ${pct}%`;
   };
 
+  // Get tooltip text based on active filter
+  const getTooltipText = () => {
+    switch(activeFilter) {
+      case 'single':
+        return 'ผลลัพธ์ของลูกเต๋าแต่ละหน้า';
+      case 'pair':
+        return 'ผลลัพธ์ของลูกเต๋าที่เป็นคู่';
+      case 'triple':
+        return 'ผลลัพธ์ของลูกเต๋าสามลูก';
+      case 'sum':
+        return 'ผลรวมของค่าลูกเต๋า';
+      default:
+        return '';
+    }
+  };
+
   // Build unified stats rows with filtering
   const buildStatsRows = () => {
     const rows = [];
 
-    // Individual faces (Single)
     if (activeFilter === 'all' || activeFilter === 'single') {
       let faceFirstRow = true;
       for (let i = 1; i <= 6; i++) {
         if (stats.faceCount[i] > 0) {
           rows.push({
             dice: String(i),
-            label: (faceFirstRow && activeFilter === 'all') ? 'แต่ละหน้าทั้งหมด' : '',
+            label: (faceFirstRow && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าแต่ละหน้า' : '',
             frequency: getFaceFrequency(stats.faceCount[i]),
             type: 'single'
           });
@@ -118,7 +129,6 @@ const HiLoStatistics = () => {
       }
     }
 
-    // Pairs
     if (activeFilter === 'all' || activeFilter === 'pair') {
       const pairEntries = Object.entries(stats.pairs)
         .filter(entry => entry[1] > 0)
@@ -128,14 +138,13 @@ const HiLoStatistics = () => {
         const pairFormatted = entry[0].split('').join(',');
         rows.push({
           dice: pairFormatted,
-          label: (idx === 0 && activeFilter === 'all') ? 'หน้าที่เกิดขึ้น จับคู่ ทั้งหมด' : '',
+          label: (idx === 0 && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าที่เป็นคู่' : '',
           frequency: getFrequency(entry[1]),
           type: 'pair'
         });
       });
     }
 
-    // Triples
     if (activeFilter === 'all' || activeFilter === 'triple') {
       const tripleEntries = Object.entries(stats.triples)
         .filter(entry => entry[1] > 0)
@@ -145,14 +154,13 @@ const HiLoStatistics = () => {
       tripleEntries.forEach((entry, idx) => {
         rows.push({
           dice: entry[0],
-          label: (idx === 0 && activeFilter === 'all') ? 'หน้าที่เกิดขึ้นพร้อมกัน' : '',
+          label: (idx === 0 && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าสามลูก' : '',
           frequency: getFrequency(entry[1]),
           type: 'triple'
         });
       });
     }
 
-    // Sums
     if (activeFilter === 'all' || activeFilter === 'sum') {
       const sumEntries = Object.entries(stats.sums)
         .filter(entry => entry[1] > 0)
@@ -161,7 +169,7 @@ const HiLoStatistics = () => {
       sumEntries.forEach((entry, idx) => {
         rows.push({
           dice: `Sum ${entry[0]}`,
-          label: (idx === 0 && activeFilter === 'all') ? 'ผลรวมของหน้าที่เคยเกิดขึ้น' : '',
+          label: (idx === 0 && activeFilter === 'all') ? 'ผลรวมของค่าลูกเต๋า' : '',
           frequency: getFrequency(entry[1]),
           type: 'sum'
         });
@@ -329,7 +337,28 @@ const HiLoStatistics = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-blue-600 text-white">
-                <th className="py-3 px-4 text-center font-semibold border-r border-white w-1/2">Dice</th>
+                <th className="py-3 px-4 text-center font-semibold border-r border-white w-1/2">
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Dice</span>
+                    {activeFilter !== 'all' && (
+                      <div className="relative inline-block">
+                        <button
+                          onMouseEnter={() => setShowTooltip(true)}
+                          onMouseLeave={() => setShowTooltip(false)}
+                          className="w-5 h-5 rounded-full bg-white text-blue-600 flex items-center justify-center text-s font-bold hover:bg-blue-50 transition-colors"
+                        >
+                          i
+                        </button>
+                        {showTooltip && (
+                          <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap z-10 shadow-lg">
+                            {getTooltipText()}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-800"></div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th className="py-3 px-4 text-center font-semibold w-1/2">Frequency</th>
               </tr>
             </thead>
@@ -346,11 +375,11 @@ const HiLoStatistics = () => {
               ) : (
                 statsRows.map((row, idx) => (
                   <tr key={idx} className={`${idx % 2 === 0 ? 'bg-blue-50' : 'bg-white'} border-b border-gray-200`}>
-                    <td className="py-3 px-4 border-r border-gray-200 w-1/2">
-                      <div className="flex items-center justify-center gap-1">
+                    <td className="py-3 px-4 border-r border-gray-200 w-1/2 text-center">
+                      <div className="inline-block relative">
                         <span className="font-mono font-semibold text-gray-700">{row.dice}</span>
                         {row.label && (
-                          <span className="text-gray-400 text-sm">// {row.label}</span>
+                          <span className="text-gray-400 text-xs whitespace-nowrap absolute left-full ml-3 top-1/2 -translate-y-1/2">// {row.label}</span>
                         )}
                       </div>
                     </td>
