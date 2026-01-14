@@ -10,7 +10,7 @@ const DiceInput = ({
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
-      <h2 className="px-3 text-lg font-bold text-gray-800 mb-3">
+      <h2 className="px-3 text-lg font-bold text-gray-800 mb-0">
         Enter dice numbers
       </h2>
       <div className="flex flex-wrap items-center justify-center gap-2">

@@ -55,9 +55,9 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
               <tr key={idx} className={`${idx % 2 === 0 ? 'bg-blue-50' : 'bg-white'} border-b border-gray-200`}>
                 <td className="py-3 px-4 border-gray-200 w-1/2 text-center">
                   <div className="inline-block relative">
-                    <span className="font-mono font-semibold text-gray-700">{row.dice}</span>
+                    <span className="font-inter font-semibold text-gray-700">{row.dice}</span>
                     {row.label && (
-                      <span className="text-gray-400 text-xs whitespace-nowrap absolute left-full ml-3 top-1/2 -translate-y-1/2">// {row.label}</span>
+                      <span className="font-inter font-semibold text-gray-400 text-xs whitespace-nowrap absolute left-full ml-3 top-1/2 -translate-y-1/2">// {row.label}</span>
                     )}
                   </div>
                 </td>

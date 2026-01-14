@@ -185,9 +185,12 @@ function App() {
 
         {/* Page Title */}
         <div className="mb-6 text-center space-y-3">
-          <h1 className="text-3xl font-bold text-gray-800">
-            🎲 Dice Tracker Dashboard
-          </h1>
+          <div className="border border-blue-600 bg-blue-600 rounded-xl h-[72px]
+                flex items-center justify-center">
+    <h1 className="text-3xl font-bold text-white">
+      🎲 Dice Tracker Dashboard
+    </h1>
+  </div>
           <p className="text-gray-500">
             Analyze dice frequency patterns from your input data
           </p>

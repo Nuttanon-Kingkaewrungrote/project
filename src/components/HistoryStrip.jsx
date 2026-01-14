@@ -31,7 +31,7 @@ const HistoryStrip = ({ history, fullView = false }) => {
                 className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font font-inter text-gray-700">
+                  <span className={`text-2xl font-bold font-inter ${hiLoColor}`}>
                     {roll.join('')}
                   </span>
                 </div>

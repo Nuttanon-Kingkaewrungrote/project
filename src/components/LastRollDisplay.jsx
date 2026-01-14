@@ -27,8 +27,8 @@ const LastRollDisplay = ({ lastRoll, historyLength }) => {
 
       {/* Count Dice */}
       <div className="border border-blue-200 bg-sky-50 text-blue-600 px-10 py-6 rounded-xl shadow-md min-w-[110px]">
-        <div className="text-xs text-center">Count Dice</div>
         <div className="text-2xl font-bold text-center">{historyLength}</div>
+        <div className="text-xs text-center">Count Dice</div>
       </div>
     </div>
   );
