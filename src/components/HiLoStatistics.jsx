@@ -182,7 +182,7 @@ const HiLoStatistics = () => {
     <div className="min-h-screen bg-gradient-to-b from-neutral-200 to-gray-100 p-4 md:p-8">
       {/* Gradient Border Wrapper */}
       <div 
-        className="rounded-3xl p-8 shadow-md mx-auto"
+        className="rounded-3xl p-4 shadow-md mx-auto"
         style={{
           width: '798px',
           minHeight: '1034px',

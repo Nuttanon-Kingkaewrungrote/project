@@ -80,7 +80,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
                         {row.label && (
                           <span
                             className="
-                              absolute left-full ml-3 top-1/2 -translate-y-1/2
+                              absolute left-full ml-1 top-1/2 -translate-y-1/2
                               text-gray-400 text-xs whitespace-nowrap
                             "
                           >
