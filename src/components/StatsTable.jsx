@@ -8,7 +8,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
       <table className="w-full" style={{overflow: 'visible', borderCollapse: 'separate', borderSpacing: 0}}>
         <thead style={{overflow: 'visible'}}>
           <tr className="bg-blue-600 text-white" style={{overflow: 'visible'}}>
-            <th className="py-3 px-4 text-center font-semibold border-r border-white w-1/2 rounded-tl-xl" style={{overflow: 'visible'}}>
+            <th className="py-3 px-4 text-center font-semibold border-white w-1/2 rounded-tl-xl" style={{overflow: 'visible'}}>
               <div className="flex items-center justify-center gap-2" style={{overflow: 'visible'}}>
                 <span>Dice</span>
                 {activeFilter !== 'all' && (
@@ -53,7 +53,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
           ) : (
             statsRows.map((row, idx) => (
               <tr key={idx} className={`${idx % 2 === 0 ? 'bg-blue-50' : 'bg-white'} border-b border-gray-200`}>
-                <td className="py-3 px-4 border-r border-gray-200 w-1/2 text-center">
+                <td className="py-3 px-4 border-gray-200 w-1/2 text-center">
                   <div className="inline-block relative">
                     <span className="font-mono font-semibold text-gray-700">{row.dice}</span>
                     {row.label && (
