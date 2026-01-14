@@ -223,7 +223,7 @@ const HiLoStatistics = () => {
           {!showHistory ? (
             <>
               {/* Filter Buttons */}
-              <div className="bg-white rounded-xl p-1 mb-5 border border-gray-200">
+              <div className="bg-white rounded-xl p-1 mb-5 border border-neutral-300">
                 <div className="flex gap-2">
                   <FilterButton label="All" value="all" activeFilter={activeFilter} onClick={setActiveFilter} />
                   <FilterButton label="Single" value="single" activeFilter={activeFilter} onClick={setActiveFilter} />
