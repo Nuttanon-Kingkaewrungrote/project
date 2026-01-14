@@ -28,23 +28,23 @@ const DiceInput = ({
 
           <button
             onClick={onManualEntry}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold shadow transition-colors"
+            className="px-6 py-3 bg-blue-600  text-white rounded-lg hover:bg-blue-500 font-semibold shadow transition-colors"
           >
             Enter
           </button>
         </div>
         <button
-          onClick={onRandom}
-          disabled={isRolling}
-          className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition-colors disabled:opacity-50"
-        >
-          🎲 Random
-        </button>
-        <button
           onClick={onClear}
-          className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow transition-colors"
+          className="px-6 py-3 bg-red-600 hover:bg-red-400 text-white font-semibold rounded-lg shadow transition-colors"
         >
           Reset
+        </button>
+        <button
+          onClick={onRandom}
+          disabled={isRolling}
+          className="px-9 py-3 bg-emerald-400 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow transition-colors disabled:opacity-50"
+        >
+          History
         </button>
       </div>
     </div>

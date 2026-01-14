@@ -75,18 +75,6 @@ function App() {
     setLastRoll(null);
   };
 
-  const handleRandom = () => {
-    setIsRolling(true);
-    const d1 = Math.floor(Math.random() * 6) + 1;
-    const d2 = Math.floor(Math.random() * 6) + 1;
-    const d3 = Math.floor(Math.random() * 6) + 1;
-    setTimeout(() => {
-      setHistory(prev => [...prev, [d1, d2, d3]]);
-      setLastRoll([d1, d2, d3]);
-      setIsRolling(false);
-    }, 500);
-  };
-
   const getFrequency = (count) => {
     if (history.length === 0) return '-';
     const pct = ((count / history.length) * 100).toFixed(0);
@@ -213,7 +201,6 @@ function App() {
           manualInput={manualInput}
           setManualInput={setManualInput}
           onManualEntry={handleManualEntrySingle}
-          onRandom={handleRandom}
           onClear={handleClear}
           isRolling={isRolling}
         />

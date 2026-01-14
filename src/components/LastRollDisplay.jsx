@@ -1,13 +1,13 @@
 import React from 'react';
 import DiceFace from './DiceFace';
 
-const LastRollDisplay = ({ lastRoll, isRolling, historyLength }) => {
+const LastRollDisplay = ({ lastRoll, historyLength }) => {
   return (
     <div className="flex items-center gap-4 mb-6">
       {/* Dice + Result */}
       <div className="flex items-center gap-8 bg-slate-50 border border-slate-200 px-10 py-5 rounded-xl shadow-md flex-1 min-h-[96px]">
         {/* Dice */}
-        <div className={`flex gap-3 ${isRolling ? 'animate-pulse' : ''}`}>
+        <div className="flex gap-3">
           {lastRoll ? (
             lastRoll.map((d, i) => (
               <DiceFace key={i} value={d} size="md" />
