@@ -10,8 +10,8 @@ function App() {
   const [history, setHistory] = useState([]);
   const [manualInput, setManualInput] = useState("");
   const [lastRoll, setLastRoll] = useState();
-  const [isRolling, setIsRolling] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [showHistory, setShowHistory] = useState(false);
 
   // Calculate all statistics
   const calculateStats = useCallback(() => {
@@ -73,6 +73,10 @@ function App() {
   const handleClear = () => {
     setHistory([]);
     setLastRoll(null);
+  };
+
+  const toggleHistory = () => {
+    setShowHistory(!showHistory);
   };
 
   const getFrequency = (count) => {
@@ -192,7 +196,6 @@ function App() {
         {/* Last Roll Display */}
         <LastRollDisplay 
           lastRoll={lastRoll} 
-          isRolling={isRolling} 
           historyLength={history.length}
         />
 
@@ -202,30 +205,38 @@ function App() {
           setManualInput={setManualInput}
           onManualEntry={handleManualEntrySingle}
           onClear={handleClear}
-          isRolling={isRolling}
+          showHistory={showHistory}
+          onToggleHistory={toggleHistory}
         />
 
-        {/* Filter Buttons */}
-        <div className="bg-white rounded-xl shadow-lg p-2 mb-6 border border-gray-200">
-          <div className="flex gap-1">
-            <FilterButton label="All" value="all" activeFilter={activeFilter} onClick={setActiveFilter} />
-            <FilterButton label="Single" value="single" activeFilter={activeFilter} onClick={setActiveFilter} />
-            <FilterButton label="Pair" value="pair" activeFilter={activeFilter} onClick={setActiveFilter} />
-            <FilterButton label="Triple" value="triple" activeFilter={activeFilter} onClick={setActiveFilter} />
-            <FilterButton label="Sum" value="sum" activeFilter={activeFilter} onClick={setActiveFilter} />
-          </div>
-        </div>
+        {/* Stats Table or History */}
+        {!showHistory ? (
+          <>
+            {/* Filter Buttons */}
+            <div className="bg-white rounded-xl shadow-lg p-2 mb-6 border border-gray-200">
+              <div className="flex gap-1">
+                <FilterButton label="All" value="all" activeFilter={activeFilter} onClick={setActiveFilter} />
+                <FilterButton label="Single" value="single" activeFilter={activeFilter} onClick={setActiveFilter} />
+                <FilterButton label="Pair" value="pair" activeFilter={activeFilter} onClick={setActiveFilter} />
+                <FilterButton label="Triple" value="triple" activeFilter={activeFilter} onClick={setActiveFilter} />
+                <FilterButton label="Sum" value="sum" activeFilter={activeFilter} onClick={setActiveFilter} />
+              </div>
+            </div>
 
-        {/* Stats Table */}
-        <StatsTable 
-          statsRows={statsRows}
-          activeFilter={activeFilter}
-          getTooltipText={getTooltipText}
-          historyLength={history.length}
-        />
+            {/* Stats Table */}
+            <StatsTable 
+              statsRows={statsRows}
+              activeFilter={activeFilter}
+              getTooltipText={getTooltipText}
+              historyLength={history.length}
+            />
+          </>
+        ) : (
+          <HistoryStrip history={history} fullView={true} />
+        )}
 
-        {/* History Strip */}
-        <HistoryStrip history={history} />
+        {/* History Strip - Only show when not in full history view */}
+        {!showHistory && <HistoryStrip history={history} />}
       </div>
     </div>
   );

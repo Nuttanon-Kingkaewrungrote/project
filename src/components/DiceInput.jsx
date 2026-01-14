@@ -4,9 +4,9 @@ const DiceInput = ({
   manualInput, 
   setManualInput, 
   onManualEntry, 
-  onRandom, 
-  onClear, 
-  isRolling 
+  onClear,
+  showHistory,
+  onToggleHistory
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
@@ -40,11 +40,14 @@ const DiceInput = ({
           Reset
         </button>
         <button
-          onClick={onRandom}
-          disabled={isRolling}
-          className="px-9 py-3 bg-emerald-400 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow transition-colors disabled:opacity-50"
+          onClick={onToggleHistory}
+          className={`px-9 py-3 font-semibold rounded-lg shadow transition-colors ${
+            showHistory 
+              ? 'bg-white border-2 border-blue-500 text-blue-500 hover:bg-blue-50' 
+              : 'bg-white border-2 border-blue-500 text-blue-500 hover:bg-blue-50'
+          }`}
         >
-          History
+          {showHistory ? '← Back' : 'History'}
         </button>
       </div>
     </div>
