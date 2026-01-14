@@ -5,7 +5,10 @@ const LastRollDisplay = ({ lastRoll, historyLength }) => {
   return (
     <div className="flex items-center gap-4 mb-6">
       {/* Dice + Result */}
-      <div className="flex items-center gap-8 bg-slate-50 border border-slate-200 px-10 py-5 rounded-xl shadow-md flex-1 min-h-[96px]">
+      <div 
+        className="flex items-center justify-between bg-slate-50 border border-neutral-300 px-10 py-5 rounded-xl"
+        style={{width: '562px', height: '114px'}}
+      >
         {/* Dice */}
         <div className="flex gap-3">
           {lastRoll ? (
@@ -19,14 +22,17 @@ const LastRollDisplay = ({ lastRoll, historyLength }) => {
 
         {/* Result */}
         {lastRoll && (
-          <div className="text-4xl font-bold text-gray-800 px-6 py-2 rounded-lg">
+          <div className="text-5xl font-bold text-gray-800 px-14 py-2 rounded-lg">
             {lastRoll.join('')}
           </div>
         )}
       </div>
 
       {/* Count Dice */}
-      <div className="border border-blue-200 bg-sky-50 text-blue-600 px-10 py-6 rounded-xl shadow-md min-w-[110px]">
+      <div 
+        className="border border-blue-200 bg-sky-50 text-blue-600 rounded-xl flex flex-col items-center justify-center"
+        style={{width: '157px', height: '114px'}}
+      >
         <div className="text-2xl font-bold text-center">{historyLength}</div>
         <div className="text-xs text-center">Count Dice</div>
       </div>

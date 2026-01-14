@@ -2,14 +2,15 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        mono: ['Inter', 'monospace'], // ใช้ Inter สำหรับตัวเลขลูกเต๋าด้วย
       },
     },
   },
   plugins: [],
-};
+}

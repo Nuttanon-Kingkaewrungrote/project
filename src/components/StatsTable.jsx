@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
+import Tooltip from './Tooltip';
 
 const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className="relative bg-white rounded-xl shadow-lg border border-gray-200 mb-6">
+    <div 
+      className="relative bg-white rounded-xl border border-gray-200 mb-6"
+      style={{width: '734px', maxHeight: '521px'}}
+    >
 
-      {/* ===== Header (Fixed, ไม่ scroll) ===== */}
+      {/* ===== Header (Fixed) ===== */}
       <table className="w-full border-separate border-spacing-0">
         <thead>
           <tr className="bg-blue-600 text-white">
             <th className="py-3 px-4 text-center font-semibold w-1/2 rounded-tl-xl">
               <div className="flex items-center justify-center gap-2">
-
                 <span>Dice</span>
 
-                {/* ===== Info Button + Tooltip ===== */}
                 {activeFilter !== 'all' && (
                   <div className="relative inline-flex">
                     <button
@@ -33,33 +35,13 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
                       i
                     </button>
 
-                    {/* Tooltip */}
                     {showTooltip && (
-                      <div
-                        className="
-                          absolute z-[9999]
-                          bottom-full left-1/2 -translate-x-1/2
-                          mb-2
-                          bg-white text-gray-800 text-sm
-                          px-8 py-5 rounded-xl
-                          shadow-2xl border border-gray-200
-                          whitespace-nowrap
-                        "
-                      >
+                      <Tooltip>
                         {getTooltipText()}
-
-                        {/* Arrow */}
-                        <div
-                          className="
-                            absolute top-full left-1/2 -translate-x-1/2
-                            border-[6px] border-transparent border-t-white
-                          "
-                        />
-                      </div>
+                      </Tooltip>
                     )}
                   </div>
                 )}
-
               </div>
             </th>
 
@@ -72,14 +54,14 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
 
       {/* ===== Scrollable Body ===== */}
       <div className="rounded-b-xl overflow-hidden">
-        <div className="max-h-[500px] overflow-y-auto">
+        <div className="max-h-[473px] overflow-y-auto">
           <table className="w-full border-separate border-spacing-0">
             <tbody>
               {statsRows.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="py-8 text-center text-gray-400">
                     {historyLength === 0
-                      ? 'ยังไม่มีข้อมูล - กดปุ่ม Enter หรือ Random เพื่อเริ่มบันทึก'
+                      ? 'ยังไม่มีข้อมูล - กดปุ่ม Enter เพื่อเริ่มบันทึก'
                       : 'ไม่มีข้อมูลในหมวดนี้'}
                   </td>
                 </tr>
