@@ -29,12 +29,13 @@ const LastRollDisplay = ({ lastRoll, historyLength }) => {
       </div>
 
       {/* Count Dice */}
-      <div 
-        className="border border-blue-200 bg-sky-50 text-blue-600 rounded-xl flex flex-col items-center justify-center"
-        style={{width: '157px', height: '114px'}}
-      >
-        <div className="text-2xl font-bold text-center">{historyLength}</div>
-        <div className="text-xs text-center">Count Dice</div>
+      <div className="border border-blue-200 bg-sky-50 rounded-xl flex flex-col items-center justify-center" style={{ width: '157px', height: '114px' }}>
+        <div className="text-4xl font-bold text-center text-blue-500">
+          {historyLength}
+        </div>
+        <div className="text-sm text-center text-blue-800">
+           Count Dice
+        </div>
       </div>
     </div>
   );
