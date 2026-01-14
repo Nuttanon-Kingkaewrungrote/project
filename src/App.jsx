@@ -157,8 +157,9 @@ function App() {
         .slice(0, 10);
       
       tripleEntries.forEach((entry, idx) => {
+        const tripleFormatted = entry[0].split('').join(',');
         rows.push({
-          dice: entry[0],
+          dice: tripleFormatted,
           label: (idx === 0 && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าสามลูก' : '',
           frequency: getFrequency(entry[1]),
           type: 'triple'
