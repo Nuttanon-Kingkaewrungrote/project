@@ -280,46 +280,6 @@ const HiLoStatistics = () => {
           </div>
         </div>
 
-        {/* Input Section */}
-        <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
-          <h2 className="px-3 text-lg font-bold text-gray-800 mb-3">
-            Enter dice numbers
-          </h2>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={manualInput}
-                onChange={(e) => {
-                  const v = e.target.value.replace(/\D/g, "");
-                  if (v.length <= 3) setManualInput(v);
-                }}
-                placeholder="Enter 3 digits"
-                className="px-6 py-2 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              />
-
-              <button
-                onClick={handleManualEntrySingle}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold shadow transition-colors"
-              >
-                Enter
-              </button>
-            </div>
-            <button
-              onClick={handleRandom}
-              disabled={isRolling}
-              className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition-colors disabled:opacity-50"
-            >
-              🎲 Random
-            </button>
-            <button
-              onClick={handleClear}
-              className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow transition-colors"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
 
         {/* Filter Buttons */}
         <div className="bg-white rounded-xl shadow-lg p-2 mb-6 border border-gray-200">

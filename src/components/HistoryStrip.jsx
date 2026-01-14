@@ -59,7 +59,7 @@ const HistoryStrip = ({ history, fullView = false }) => {
   }
 
   // Original compact view
-  return (
+  //return (
     <div className="mt-6 bg-white rounded-xl shadow-lg p-4 border border-gray-200">
       <div className="text-sm text-gray-500 mb-2">Recent History:</div>
       <div className="flex flex-wrap gap-2">
@@ -80,7 +80,7 @@ const HistoryStrip = ({ history, fullView = false }) => {
         })}
       </div>
     </div>
-  );
+  //);
 };
 
 export default HistoryStrip;

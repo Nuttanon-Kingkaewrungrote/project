@@ -10,7 +10,7 @@ const DiceInput = ({
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-200">
-      <h2 className="px-3 text-lg font-bold text-gray-800 mb-0">
+      <h2 className="px-4 text-lg font-medium text-gray-800 mb-0">
         Enter dice numbers
       </h2>
       <div className="flex flex-wrap items-center justify-center gap-2">
@@ -23,7 +23,7 @@ const DiceInput = ({
               if (v.length <= 3) setManualInput(v);
             }}
             placeholder="Enter 3 digits"
-            className="px-14 py-2 text-center text-lg font-bold border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-[343px] h-[48px] text-center text-lg font-normal border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
 
           <button
