@@ -4,6 +4,7 @@ import LastRollDisplay from './LastRollDisplay';
 import FilterButton from './FilterButton';
 import StatsTable from './StatsTable';
 import HistoryStrip from './HistoryStrip';
+import ResetConfirmModal from './ResetConfirmModal';
 
 const HiLoStatistics = () => {
   const [history, setHistory] = useState([]);
@@ -11,6 +12,7 @@ const HiLoStatistics = () => {
   const [lastRoll, setLastRoll] = useState();
   const [activeFilter, setActiveFilter] = useState('all');
   const [showHistory, setShowHistory] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   // Calculate all statistics
   const calculateStats = useCallback(() => {
@@ -70,8 +72,17 @@ const HiLoStatistics = () => {
   };
 
   const handleClear = () => {
+    setShowResetModal(true);
+  };
+
+  const handleConfirmReset = () => {
     setHistory([]);
     setLastRoll(null);
+    setShowResetModal(false);
+  };
+
+  const handleCancelReset = () => {
+    setShowResetModal(false);
   };
 
   const toggleHistory = () => {
@@ -179,14 +190,15 @@ const HiLoStatistics = () => {
   const statsRows = buildStatsRows();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-200 to-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8 flex items-start justify-center overflow-y-auto">
       {/* Gradient Border Wrapper */}
       <div 
-        className="rounded-3xl p-4 shadow-md mx-auto"
+        className="rounded-3xl p-8 shadow-2xl mx-auto my-4 origin-top"
         style={{
           width: '798px',
           minHeight: '1034px',
-          background: 'linear-gradient(to bottom, #FFFFFF, #EBEFF7, #F6F3FF)'
+          background: 'linear-gradient(to bottom, #FFFFFF, #EBEFF7, #F6F3FF)',
+          transform: 'scale(min(1, calc((100vw - 32px) / 798)))',
         }}
       >
         <div className="mx-auto" style={{width: '734px'}}>
@@ -198,7 +210,7 @@ const HiLoStatistics = () => {
                 🎲 Dice Tracker Dashboard
               </h1>
             </div>
-            <p className="font-semibold text-gray-500">
+            <p className="font-bold text-gray-500">
               Analyze dice frequency patterns from your input data
             </p>
           </div>
@@ -223,8 +235,11 @@ const HiLoStatistics = () => {
           {!showHistory ? (
             <>
               {/* Filter Buttons */}
-              <div className="bg-white rounded-xl p-1 mb-5 border border-neutral-300">
-                <div className="flex gap-2">
+              <div 
+                className="bg-white rounded-xl shadow-lg border border-gray-200 mb-6 flex items-center justify-center"
+                style={{width: '734px', height: '46px', padding: '4px'}}
+              >
+                <div className="flex gap-1 w-full">
                   <FilterButton label="All" value="all" activeFilter={activeFilter} onClick={setActiveFilter} />
                   <FilterButton label="Single" value="single" activeFilter={activeFilter} onClick={setActiveFilter} />
                   <FilterButton label="Pair" value="pair" activeFilter={activeFilter} onClick={setActiveFilter} />
@@ -249,6 +264,13 @@ const HiLoStatistics = () => {
           {!showHistory && <HistoryStrip history={history} />}
         </div>
       </div>
+
+      {/* Reset Confirmation Modal */}
+      <ResetConfirmModal 
+        isOpen={showResetModal}
+        onConfirm={handleConfirmReset}
+        onCancel={handleCancelReset}
+      />
     </div>
   );
 };
