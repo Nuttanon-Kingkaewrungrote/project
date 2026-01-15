@@ -61,7 +61,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
                 <tr>
                   <td colSpan={2} className="py-8 text-center text-gray-400">
                     {historyLength === 0
-                      ? 'ยังไม่มีข้อมูล - กดปุ่ม Enter เพื่อเริ่มบันทึก'
+                      ? 'กรุณาใส่ตัวเลข และกด Enter เพื่อเริ่มบันทึก'
                       : 'ไม่มีข้อมูลในหมวดนี้'}
                   </td>
                 </tr>

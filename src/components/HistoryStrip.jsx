@@ -1,21 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const HistoryStrip = ({ history, fullView = false }) => {
+const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [deletingIndex, setDeletingIndex] = useState(null);
+  const [editValue, setEditValue] = useState('');
+
   if (history.length === 0) {
     if (fullView) {
       return (
         <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Recent History</h2>
           <div className="text-center text-gray-400 py-8">
-            ยังไม่มีประวัติ - เริ่มบันทึกข้อมูลเพื่อดูประวัติ
+            กรุณาใส่ตัวเลข และกด Enter เพื่อเริ่มบันทึก
           </div>
         </div>
       );
     }
     return null;
   }
+
+  const handleEditClick = (idx, roll) => {
+    setEditingIndex(idx);
+    setEditValue(roll.join(''));
+    setDeletingIndex(null);
+  };
+
+  const handleDeleteClick = (idx) => {
+    setDeletingIndex(idx);
+    setEditingIndex(null);
+  };
+
+  const handleSave = (idx) => {
+    if (editValue.length === 3) {
+      const dice = editValue.split('').map(Number);
+      if (dice.every(d => d >= 1 && d <= 6)) {
+        onEdit(idx, dice);
+        setEditingIndex(null);
+        setEditValue('');
+      } else {
+        alert("Dice number must be between 1 and 6");
+      }
+    } else {
+      alert("Please enter exactly 3 digits");
+    }
+  };
+
+  const handleConfirmDelete = (idx) => {
+    onDelete(idx);
+    setDeletingIndex(null);
+  };
+
+  const handleCancel = () => {
+    setEditingIndex(null);
+    setDeletingIndex(null);
+    setEditValue('');
+  };
   
   if (fullView) {
+    const reversedHistory = history.slice().reverse();
+    
     return (
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
         <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-1">
@@ -25,18 +68,102 @@ const HistoryStrip = ({ history, fullView = false }) => {
           Recent History
         </h2>
         <div className="space-y-3 max-h-[500px] overflow-y-auto">
-          {history.slice().reverse().map((roll, idx) => {
+          {reversedHistory.map((roll, idx) => {
+            const originalIdx = history.length - 1 - idx;
             const sum = roll.reduce((a, b) => a + b, 0);
             const hiLo = sum >= 11 ? 'Hi' : 'Lo';
             const hiLoColor = sum >= 11 ? 'text-blue-600' : 'text-red-600';
+            const isEditing = editingIndex === originalIdx;
+            const isDeleting = deletingIndex === originalIdx;
             
+            // Edit Mode
+            if (isEditing) {
+              return (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-3 border-2 border-blue-500 rounded-xl bg-blue-50"
+                >
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, "");
+                        if (v.length <= 3) setEditValue(v);
+                      }}
+                      className="w-24 px-3 py-2 text-lg font-bold text-center border-2 border-blue-500 rounded-lg focus:outline-none focus:border-blue-600"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleSave(originalIdx)}
+                      className="px-6 py-2 text-white font-semibold rounded-lg transition-colors"
+                      style={{ backgroundColor: '#2563EB' }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#1E52C4'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#2563EB'}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="px-6 py-2 font-semibold rounded-lg transition-colors"
+                      style={{ backgroundColor: '#E5E7EB', color: '#374151' }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#C7C8CB'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#E5E7EB'}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            // Delete Mode
+            if (isDeleting) {
+              return (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-4 border-2 border-red-500 rounded-xl bg-red-50"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`text-lg font-bold ${hiLoColor}`}>
+                      {roll.join('')}
+                    </span>
+                    <span className="text-gray-600">Delete this input?</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleConfirmDelete(originalIdx)}
+                      className="px-6 py-2 text-white font-semibold rounded-lg transition-colors"
+                      style={{ backgroundColor: '#DC2627' }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#AF1E1E'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#DC2627'}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="px-6 py-2 font-semibold rounded-lg transition-colors"
+                      style={{ backgroundColor: '#E5E7EB', color: '#374151' }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#C7C8CB'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#E5E7EB'}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            // Normal Mode
             return (
               <div
                 key={idx}
                 className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <span className={`text-2xl font-bold font-inter ${hiLoColor}`}>
+                  <span className={`text-lg font-bold ${hiLoColor}`}>
                     {roll.join('')}
                   </span>
                 </div>
@@ -44,12 +171,18 @@ const HistoryStrip = ({ history, fullView = false }) => {
                   <span className={`text-lg font-semibold ${hiLoColor} min-w-[40px] text-center`}>
                     {hiLo}
                   </span>
-                  <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg border-2 border-gray-200 transition-colors">
+                  <button 
+                    onClick={() => handleEditClick(originalIdx, roll)}
+                    className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg border-2 border-gray-200 transition-colors"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </button>
-                  <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg border-2 border-gray-200 transition-colors">
+                  <button 
+                    onClick={() => handleDeleteClick(originalIdx)}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg border-2 border-gray-200 transition-colors"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

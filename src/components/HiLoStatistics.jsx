@@ -52,6 +52,23 @@ const HiLoStatistics = () => {
     return stats;
   }, [history]);
 
+  const handleEditHistory = (index, newDice) => {
+  const newHistory = [...history];
+  newHistory[index] = newDice;
+  setHistory(newHistory);
+  if (index === history.length - 1) {
+    setLastRoll(newDice);
+  }
+};
+
+const handleDeleteHistory = (index) => {
+  const newHistory = history.filter((_, i) => i !== index);
+  setHistory(newHistory);
+  if (index === history.length - 1) {
+    setLastRoll(newHistory[newHistory.length - 1] || null);
+  }
+};
+
   const stats = calculateStats();
 
   const handleManualEntrySingle = () => {
@@ -257,7 +274,7 @@ const HiLoStatistics = () => {
               />
             </>
           ) : (
-            <HistoryStrip history={history} fullView={true} />
+            <HistoryStrip history={history} fullView={true} onEdit={handleEditHistory} onDelete={handleDeleteHistory} />
           )}
 
           {/* History Strip - Only show when not in full history view */}
