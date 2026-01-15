@@ -14,11 +14,16 @@ const HistoryStrip = ({ history, fullView = false }) => {
     }
     return null;
   }
-
+  
   if (fullView) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Recent History</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-1">
+          <svg className="w-6 h-6" fill="none" stroke="#3B82F6" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Recent History
+        </h2>
         <div className="space-y-3 max-h-[500px] overflow-y-auto">
           {history.slice().reverse().map((roll, idx) => {
             const sum = roll.reduce((a, b) => a + b, 0);

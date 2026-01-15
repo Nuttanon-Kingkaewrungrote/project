@@ -32,7 +32,7 @@ const DiceInput = ({
 
           <button
             onClick={onManualEntry}
-            className="bg-blue-600 text-white rounded-lg hover:bg-blue-500 font-semibold shadow transition-colors"
+            className="bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold shadow transition-colors"
             style={{width: '100px', height: '48px'}}
           >
             Enter
@@ -40,7 +40,7 @@ const DiceInput = ({
         </div>
         <button
           onClick={onClear}
-          className="bg-red-600 hover:bg-red-400 text-white font-semibold rounded-lg shadow transition-colors flex items-center justify-center gap-1"
+          className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition-colors flex items-center justify-center gap-1"
           style={{width: '100px', height: '48px'}}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ const DiceInput = ({
         </button>
         <button
           onClick={onToggleHistory}
-          className="font-semibold rounded-lg shadow transition-colors bg-white border-2 border-blue-500 text-blue-500 hover:bg-blue-50 flex items-center justify-center gap-1"
+          className="font-semibold rounded-lg shadow transition-colors bg-white border-2 border-blue-500 text-blue-500 hover:bg-sky-100 flex items-center justify-center gap-1"
           style={{width: '121px', height: '48px'}}
         >
           {showHistory ? (

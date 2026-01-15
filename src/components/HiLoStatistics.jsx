@@ -190,10 +190,10 @@ const HiLoStatistics = () => {
   const statsRows = buildStatsRows();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8 flex items-start justify-center overflow-y-auto">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-4 flex items-start justify-center overflow-y-auto">
       {/* Gradient Border Wrapper */}
       <div 
-        className="rounded-3xl p-8 shadow-2xl mx-auto my-4 origin-top"
+        className="rounded-3xl p-4 shadow-2xl mx-auto my-3 origin-top"
         style={{
           width: '798px',
           minHeight: '1034px',
@@ -204,13 +204,13 @@ const HiLoStatistics = () => {
         <div className="mx-auto" style={{width: '734px'}}>
 
           {/* Page Title */}
-          <div className="mb-6 text-center space-y-3">
+          <div className="mb-4 text-center space-y-4">
             <div className="border border-blue-600 bg-blue-600 rounded-xl h-[72px] flex items-center justify-center">
               <h1 className="text-2xl font-bold text-white">
                 🎲 Dice Tracker Dashboard
               </h1>
             </div>
-            <p className="font-bold text-gray-500">
+            <p className="font-normal text-gray-500">
               Analyze dice frequency patterns from your input data
             </p>
           </div>
