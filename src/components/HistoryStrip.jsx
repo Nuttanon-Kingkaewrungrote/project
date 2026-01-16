@@ -82,6 +82,9 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
                 <div
                   key={idx}
                   className="flex items-center justify-between p-3 border-2 border-blue-500 rounded-xl bg-blue-50"
+                  style={{
+                    boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2)'
+                  }}
                 >
                   <div className="flex items-center gap-4">
                     <input
@@ -125,6 +128,9 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
                 <div
                   key={idx}
                   className="flex items-center justify-between p-4 border-2 border-red-500 rounded-xl bg-red-50"
+                  style={{
+                    boxShadow: '0 4px 6px -1px rgba(220, 38, 39, 0.3), 0 2px 4px -1px rgba(220, 38, 39, 0.2)'
+                  }}
                 >
                   <div className="flex items-center gap-2">
                     <span className={`text-lg font-bold ${hiLoColor}`}>
