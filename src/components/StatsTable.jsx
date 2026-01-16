@@ -3,6 +3,102 @@ import Tooltip from './Tooltip';
 
 const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' = มากไปน้อย, 'asc' = น้อยไปมาก
+
+  const toggleSort = () => {
+    setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+  };
+
+  // Function to extract percentage from frequency string
+  const getPercentage = (frequency) => {
+    if (frequency === '-') return 0;
+    const match = frequency.match(/= (\d+)%/);
+    return match ? parseInt(match[1]) : 0;
+  };
+
+  // Sort statsRows by frequency
+  const sortedRows = [...statsRows].sort((a, b) => {
+    const percentA = getPercentage(a.frequency);
+    const percentB = getPercentage(b.frequency);
+    
+    // Sort by type first (to keep categories together in 'all' view)
+    const typeOrder = { single: 1, pair: 2, triple: 3, sum: 4 };
+    const typeCompare = typeOrder[a.type] - typeOrder[b.type];
+    
+    if (activeFilter === 'all' && typeCompare !== 0) {
+      // In 'all' view, keep types together
+      return typeCompare;
+    }
+    
+    // Within same type, sort by percentage
+    if (sortOrder === 'desc') {
+      return percentB - percentA; // มากไปน้อย
+    } else {
+      return percentA - percentB; // น้อยไปมาก
+    }
+  });
+
+  // Group by type for 'all' view and sort within groups
+  const getGroupedAndSortedRows = () => {
+    if (activeFilter !== 'all') {
+      return sortedRows;
+    }
+
+    // Group by type
+    const groups = {
+      single: [],
+      pair: [],
+      triple: [],
+      sum: []
+    };
+
+    // Remove all labels first
+    statsRows.forEach(row => {
+      groups[row.type].push({
+        ...row,
+        label: '' // เคลียร์ label เดิมออกก่อน
+      });
+    });
+
+    // Sort each group and add label to first item
+    const labelMap = {
+      single: 'ผลลัพธ์ของลูกเต๋าแต่ละหน้า',
+      pair: 'ผลลัพธ์ของลูกเต๋าที่เป็นคู่',
+      triple: 'ผลลัพธ์ของลูกเต๋าสามลูก',
+      sum: 'ผลรวมของค่าลูกเต๋า'
+    };
+
+    Object.keys(groups).forEach(type => {
+      groups[type].sort((a, b) => {
+        const percentA = getPercentage(a.frequency);
+        const percentB = getPercentage(b.frequency);
+        
+        if (sortOrder === 'desc') {
+          return percentB - percentA;
+        } else {
+          return percentA - percentB;
+        }
+      });
+
+      // Add label to first item in each group (after sort)
+      if (groups[type].length > 0) {
+        groups[type][0] = {
+          ...groups[type][0],
+          label: labelMap[type]
+        };
+      }
+    });
+
+    // Combine groups back together
+    return [
+      ...groups.single,
+      ...groups.pair,
+      ...groups.triple,
+      ...groups.sum
+    ];
+  };
+
+  const displayRows = getGroupedAndSortedRows();
 
   return (
     <div 
@@ -46,7 +142,30 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
             </th>
 
             <th className="py-3 px-4 text-center font-semibold w-1/2 rounded-tr-xl">
-              Frequency
+              <div className="flex items-center justify-center gap-2">
+                <button
+                  onClick={toggleSort}
+                  className="flex items-center gap-2 font-semibold transition-all duration-200"
+                  title={sortOrder === 'desc' ? 'คลิกเพื่อเรียงน้อยไปมาก' : 'คลิกเพื่อเรียงมากไปน้อย'}
+                >
+                  <span>Frequency</span>
+                  {sortOrder === 'desc' ? (
+                    // มากไปน้อย: ยาว-กลาง-สั้น
+                    <div className="flex flex-col items-center gap-0.5 w-4">
+                      <div className="h-0.5 bg-white rounded-full" style={{width: '16px'}}></div>
+                      <div className="h-0.5 bg-white rounded-full" style={{width: '12px'}}></div>
+                      <div className="h-0.5 bg-white rounded-full" style={{width: '8px'}}></div>
+                    </div>
+                  ) : (
+                    // น้อยไปมาก: สั้น-กลาง-ยาว
+                    <div className="flex flex-col items-center gap-0.5 w-4">
+                      <div className="h-0.5 bg-white rounded-full" style={{width: '8px'}}></div>
+                      <div className="h-0.5 bg-white rounded-full" style={{width: '12px'}}></div>
+                      <div className="h-0.5 bg-white rounded-full" style={{width: '16px'}}></div>
+                    </div>
+                  )}
+                </button>
+              </div>
             </th>
           </tr>
         </thead>
@@ -57,7 +176,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
         <div className="max-h-[473px] overflow-y-auto">
           <table className="w-full border-separate border-spacing-0">
             <tbody>
-              {statsRows.length === 0 ? (
+              {displayRows.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="py-8 text-center text-gray-400">
                     {historyLength === 0
@@ -66,7 +185,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
                   </td>
                 </tr>
               ) : (
-                statsRows.map((row, idx) => (
+                displayRows.map((row, idx) => (
                   <tr
                     key={idx}
                     className={idx % 2 === 0 ? 'bg-blue-50' : 'bg-white'}
