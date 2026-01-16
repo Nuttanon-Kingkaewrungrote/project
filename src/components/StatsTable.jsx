@@ -3,10 +3,10 @@ import Tooltip from './Tooltip';
 
 const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' = มากไปน้อย, 'asc' = น้อยไปมาก
+  const [sortOrder, setSortOrder] = useState('normal'); // 'normal' = เรียงตามปกติ, 'desc' = มากไปน้อย
 
   const toggleSort = () => {
-    setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+    setSortOrder(prev => prev === 'normal' ? 'desc' : 'normal');
   };
 
   // Function to extract percentage from frequency string
@@ -16,30 +16,35 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
     return match ? parseInt(match[1]) : 0;
   };
 
-  // Sort statsRows by frequency
-  const sortedRows = [...statsRows].sort((a, b) => {
-    const percentA = getPercentage(a.frequency);
-    const percentB = getPercentage(b.frequency);
-    
-    // Sort by type first (to keep categories together in 'all' view)
-    const typeOrder = { single: 1, pair: 2, triple: 3, sum: 4 };
-    const typeCompare = typeOrder[a.type] - typeOrder[b.type];
-    
-    if (activeFilter === 'all' && typeCompare !== 0) {
-      // In 'all' view, keep types together
-      return typeCompare;
+  // Sort statsRows by frequency only if sortOrder is 'desc'
+  const getSortedRows = () => {
+    if (sortOrder === 'normal') {
+      return statsRows; // Return original order
     }
-    
-    // Within same type, sort by percentage
-    if (sortOrder === 'desc') {
-      return percentB - percentA; // มากไปน้อย
-    } else {
-      return percentA - percentB; // น้อยไปมาก
-    }
-  });
+
+    // Sort by percentage (desc)
+    return [...statsRows].sort((a, b) => {
+      const percentA = getPercentage(a.frequency);
+      const percentB = getPercentage(b.frequency);
+      
+      // Sort by type first (to keep categories together in 'all' view)
+      const typeOrder = { single: 1, pair: 2, triple: 3, sum: 4 };
+      const typeCompare = typeOrder[a.type] - typeOrder[b.type];
+      
+      if (activeFilter === 'all' && typeCompare !== 0) {
+        // In 'all' view, keep types together
+        return typeCompare;
+      }
+      
+      // Within same type, sort by percentage (มากไปน้อย)
+      return percentB - percentA;
+    });
+  };
 
   // Group by type for 'all' view and sort within groups
   const getGroupedAndSortedRows = () => {
+    const sortedRows = getSortedRows();
+
     if (activeFilter !== 'all') {
       return sortedRows;
     }
@@ -53,14 +58,25 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
     };
 
     // Remove all labels first
-    statsRows.forEach(row => {
+    sortedRows.forEach(row => {
       groups[row.type].push({
         ...row,
         label: '' // เคลียร์ label เดิมออกก่อน
       });
     });
 
-    // Sort each group and add label to first item
+    // If sorting, sort each group
+    if (sortOrder === 'desc') {
+      Object.keys(groups).forEach(type => {
+        groups[type].sort((a, b) => {
+          const percentA = getPercentage(a.frequency);
+          const percentB = getPercentage(b.frequency);
+          return percentB - percentA;
+        });
+      });
+    }
+
+    // Add label to first item in each group
     const labelMap = {
       single: 'ผลลัพธ์ของลูกเต๋าแต่ละหน้า',
       pair: 'ผลลัพธ์ของลูกเต๋าที่เป็นคู่',
@@ -69,18 +85,6 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
     };
 
     Object.keys(groups).forEach(type => {
-      groups[type].sort((a, b) => {
-        const percentA = getPercentage(a.frequency);
-        const percentB = getPercentage(b.frequency);
-        
-        if (sortOrder === 'desc') {
-          return percentB - percentA;
-        } else {
-          return percentA - percentB;
-        }
-      });
-
-      // Add label to first item in each group (after sort)
       if (groups[type].length > 0) {
         groups[type][0] = {
           ...groups[type][0],
@@ -146,23 +150,21 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
                 <button
                   onClick={toggleSort}
                   className="flex items-center gap-2 font-semibold transition-all duration-200"
-                  title={sortOrder === 'desc' ? 'คลิกเพื่อเรียงน้อยไปมาก' : 'คลิกเพื่อเรียงมากไปน้อย'}
+                  title={sortOrder === 'normal' ? 'คลิกเพื่อเรียงมากไปน้อย' : 'คลิกเพื่อกลับสู่ลำดับปกติ'}
                 >
                   <span>Frequency</span>
-                  {sortOrder === 'desc' ? (
-                    // มากไปน้อย: ยาว-กลาง-สั้น
+                  {sortOrder === 'normal' ? (
+                    // Normal: ยาว-กลาง-สั้น (เหมือน max to min เดิม)
                     <div className="flex flex-col items-center gap-0.5 w-4">
                       <div className="h-0.5 bg-white rounded-full" style={{width: '16px'}}></div>
                       <div className="h-0.5 bg-white rounded-full" style={{width: '12px'}}></div>
                       <div className="h-0.5 bg-white rounded-full" style={{width: '8px'}}></div>
                     </div>
                   ) : (
-                    // น้อยไปมาก: สั้น-กลาง-ยาว
-                    <div className="flex flex-col items-center gap-0.5 w-4">
-                      <div className="h-0.5 bg-white rounded-full" style={{width: '8px'}}></div>
-                      <div className="h-0.5 bg-white rounded-full" style={{width: '12px'}}></div>
-                      <div className="h-0.5 bg-white rounded-full" style={{width: '16px'}}></div>
-                    </div>
+                    // Max to Min: ลูกศรลงมีขีด
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0 0l-4-4m4 4l4-4" />
+                    </svg>
                   )}
                 </button>
               </div>
