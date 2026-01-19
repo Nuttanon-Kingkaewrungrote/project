@@ -8,6 +8,51 @@ const DiceInput = ({
   showHistory,
   onToggleHistory
 }) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  const handleManualEntry = () => {
+    if (manualInput.length !== 3) {
+      setHasError(true);
+      alert("Please enter exactly 3 digits");
+      return;
+    }
+
+    const dice = manualInput.split("").map(Number);
+    if (dice.some(d => d < 1 || d > 6)) {
+      setHasError(true);
+      alert("Dice number must be between 1 and 6");
+      return;
+    }
+
+    setHasError(false);
+    onManualEntry();
+  };
+
+  const handleInputChange = (e) => {
+    const v = e.target.value.replace(/\D/g, "");
+    if (v.length <= 3) {
+      setManualInput(v);
+      // Check if input is complete (3 digits) and all valid
+      if (v.length === 3) {
+        const dice = v.split("").map(Number);
+        if (dice.every(d => d >= 1 && d <= 6)) {
+          setHasError(false);
+        } else {
+          setHasError(true);
+        }
+      } else {
+        // Not complete, show red border
+        setHasError(v.length > 0);
+      }
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleManualEntry();
+    }
+  };
+
   return (
     <div 
       className="bg-slate-50 rounded-xl p-4 mb-6 border border-neutral-300"
@@ -21,17 +66,19 @@ const DiceInput = ({
           <input
             type="text"
             value={manualInput}
-            onChange={(e) => {
-              const v = e.target.value.replace(/\D/g, "");
-              if (v.length <= 3) setManualInput(v);
-            }}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
             placeholder="Enter 3 digits"
-            className="text-center text-lg font-normal bg-slate-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className={`text-center text-lg font-normal bg-slate-50 rounded-lg focus:outline-none ${
+              hasError 
+                ? 'border-2 border-red-500 focus:border-red-500' 
+                : 'border border-neutral-300 focus:border-blue-500'
+            }`}
             style={{width: '343px', height: '48px'}}
           />
 
           <button
-            onClick={onManualEntry}
+            onClick={handleManualEntry}
             className="bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold shadow transition-colors"
             style={{width: '100px', height: '48px'}}
           >
@@ -43,7 +90,7 @@ const DiceInput = ({
           className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition-colors flex items-center justify-center gap-1"
           style={{width: '100px', height: '48px'}}
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 15 15">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
             <path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
           </svg>
