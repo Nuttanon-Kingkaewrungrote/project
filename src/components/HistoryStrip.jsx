@@ -1,23 +1,12 @@
 import React, { useState } from 'react';
+import SuccessToast from './SuccessToast';
 
 const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [deletingIndex, setDeletingIndex] = useState(null);
   const [editValue, setEditValue] = useState('');
-
-  if (history.length === 0) {
-    if (fullView) {
-      return (
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Recent History</h2>
-          <div className="text-center text-gray-400 py-8">
-            กรุณาใส่ตัวเลข และกด Enter เพื่อเริ่มบันทึก
-          </div>
-        </div>
-      );
-    }
-    return null;
-  }
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleEditClick = (idx, roll) => {
     setEditingIndex(idx);
@@ -37,6 +26,8 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
         onEdit(idx, dice);
         setEditingIndex(null);
         setEditValue('');
+        setToastMessage('Saved successfully');
+        setShowToast(true);
       } else {
         alert("Dice number must be between 1 and 6");
       }
@@ -46,8 +37,15 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
   };
 
   const handleConfirmDelete = (idx) => {
-    onDelete(idx);
-    setDeletingIndex(null);
+    // Show toast first
+    setToastMessage('Deleted successfully');
+    setShowToast(true);
+    
+    // Then delete after a small delay to ensure toast renders
+    setTimeout(() => {
+      onDelete(idx);
+      setDeletingIndex(null);
+    }, 50);
   };
 
   const handleCancel = () => {
@@ -55,12 +53,40 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
     setDeletingIndex(null);
     setEditValue('');
   };
+
+  // Render toast outside of conditional rendering
+  const toastComponent = (
+    <SuccessToast 
+      message={toastMessage}
+      isVisible={showToast}
+      onClose={() => setShowToast(false)}
+    />
+  );
+  
+  if (history.length === 0) {
+    if (fullView) {
+      return (
+        <>
+          {toastComponent}
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Recent History</h2>
+            <div className="text-center text-gray-400 py-8">
+              กรุณาใส่ตัวเลข และกด Enter เพื่อเริ่มบันทึก
+            </div>
+          </div>
+        </>
+      );
+    }
+    return toastComponent;
+  }
   
   if (fullView) {
     const reversedHistory = history.slice().reverse();
     
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+      <>
+        {toastComponent}
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
         <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-1">
           <svg className="w-6 h-6" fill="none" stroke="#3B82F6" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -199,12 +225,15 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
           })}
         </div>
       </div>
+      </>
     );
   }
 
   // Original compact view
-  //return (
-    <div className="mt-6 bg-white rounded-xl shadow-lg p-4 border border-gray-200">
+  return (
+    <>
+      {toastComponent}
+      <div className="mt-6 bg-white rounded-xl shadow-lg p-4 border border-gray-200">
       <div className="text-sm text-gray-500 mb-2">Recent History:</div>
       <div className="flex flex-wrap gap-2">
         {history.slice(-15).reverse().map((roll, idx) => {
@@ -224,7 +253,8 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
         })}
       </div>
     </div>
-  //);
+    </>
+  );
 };
 
 export default HistoryStrip;
