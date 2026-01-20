@@ -230,7 +230,7 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
   }
 
   // Original compact view
-  return (
+  //return (
     <>
       {toastComponent}
       <div className="mt-6 bg-white rounded-xl shadow-lg p-4 border border-gray-200">
@@ -254,7 +254,7 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
       </div>
     </div>
     </>
-  );
+  //);
 };
 
 export default HistoryStrip;
