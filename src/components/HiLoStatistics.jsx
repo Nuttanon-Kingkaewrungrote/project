@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import DiceInput from './DiceInput';
 import LastRollDisplay from './LastRollDisplay';
 import FilterButton from './FilterButton';
@@ -7,12 +7,31 @@ import HistoryStrip from './HistoryStrip';
 import ResetConfirmModal from './ResetConfirmModal';
 
 const HiLoStatistics = () => {
-  const [history, setHistory] = useState([]);
+  // Load history from localStorage on mount
+  const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem('diceHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
   const [manualInput, setManualInput] = useState("");
-  const [lastRoll, setLastRoll] = useState();
+  
+  const [lastRoll, setLastRoll] = useState(() => {
+    const saved = localStorage.getItem('diceHistory');
+    if (saved) {
+      const data = JSON.parse(saved);
+      return data.length > 0 ? data[data.length - 1] : null;
+    }
+    return null;
+  });
+  
   const [activeFilter, setActiveFilter] = useState('all');
   const [showHistory, setShowHistory] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('diceHistory', JSON.stringify(history));
+  }, [history]);
 
   // Calculate all statistics
   const calculateStats = useCallback(() => {
@@ -53,21 +72,21 @@ const HiLoStatistics = () => {
   }, [history]);
 
   const handleEditHistory = (index, newDice) => {
-  const newHistory = [...history];
-  newHistory[index] = newDice;
-  setHistory(newHistory);
-  if (index === history.length - 1) {
-    setLastRoll(newDice);
-  }
-};
+    const newHistory = [...history];
+    newHistory[index] = newDice;
+    setHistory(newHistory);
+    if (index === history.length - 1) {
+      setLastRoll(newDice);
+    }
+  };
 
-const handleDeleteHistory = (index) => {
-  const newHistory = history.filter((_, i) => i !== index);
-  setHistory(newHistory);
-  if (index === history.length - 1) {
-    setLastRoll(newHistory[newHistory.length - 1] || null);
-  }
-};
+  const handleDeleteHistory = (index) => {
+    const newHistory = history.filter((_, i) => i !== index);
+    setHistory(newHistory);
+    if (index === history.length - 1) {
+      setLastRoll(newHistory[newHistory.length - 1] || null);
+    }
+  };
 
   const stats = calculateStats();
 
