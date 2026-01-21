@@ -1,9 +1,9 @@
-🎲 Project Hilo
+Project Hilo
 
-    A web-based Hi-Lo dice statistics application built as an internship project.
+    
 The system allows users to roll three dice, record history, and analyze statistical frequencies such as individual faces, pairs, triples, and sums.
 
-📌 Project Overview
+Project Overview
 
 Project Name: Project Hilo
 Type: Frontend Web Application
@@ -11,13 +11,13 @@ Purpose: Practice React, state management, and UI design for internship-level ex
 
 Project Hilo simulates a traditional Hi-Lo dice game and visualizes historical outcomes in a clean, modern UI.
 
-🚀 Features
+Features
 
-🎲 Roll 3 dice randomly
+Roll 3 dice randomly
 
-✍️ Manual dice input (Entry)
+Manual dice input (Entry)
 
-📊 Dice statistics analysis
+Dice statistics analysis
 
 Individual face frequency (1–6)
 
@@ -27,16 +27,16 @@ Triple combinations
 
 Sum of dice values
 
-🧮 Percentage calculation per outcome
+Percentage calculation per outcome
 
-🗂 Display recent roll history
+Display recent roll history
 
-♻️ Reset all history
+Reset all history
 
-🎨 Responsive UI with Tailwind CSS
+Responsive UI with Tailwind CSS
 
 
-🛠 Tech Stack
+Tech Stack
 
 React  19.2.0 (Functional Components & Hooks)
 
@@ -48,7 +48,7 @@ JavaScript (ES6+)
 
 Git & GitHub (Version control)
 
-📦 Installation
+ Installation
 1. Clone repository
 bashgit clone https://github.com/yourusername/project-hilo.git
 cd project-hilo
@@ -57,7 +57,7 @@ bashnpm install
 3. Run development server
 bashnpm run dev
 
-📁 Project Structure
+ Project Structure
 project-hilo/
 ├── src/
 │   ├── components/
