@@ -38,12 +38,45 @@ Sum of dice values
 
 🛠 Tech Stack
 
-React (Functional Components & Hooks)
+React  19.2.0 (Functional Components & Hooks)
 
-Vite (Build tool & dev server)
+Vite 7.2.4 (Build tool & dev server)
 
-Tailwind CSS (Utility-first CSS framework)
+Tailwind CSS 3.4.19 (Utility-first CSS framework)
 
 JavaScript (ES6+)
 
 Git & GitHub (Version control)
+
+📦 Installation
+1. Clone repository
+bashgit clone https://github.com/yourusername/project-hilo.git
+cd project-hilo
+2. Install dependencies
+bashnpm install
+3. Run development server
+bashnpm run dev
+
+📁 Project Structure
+project-hilo/
+├── src/
+│   ├── components/
+│   │   ├── HiLoStatistics.jsx    # Main component
+│   │   ├── DiceInput.jsx          # Input section
+│   │   ├── LastRollDisplay.jsx   # Display last roll
+│   │   ├── FilterButton.jsx      # Filter buttons
+│   │   ├── StatsTable.jsx        # Statistics table
+│   │   ├── HistoryStrip.jsx      # History list
+│   │   ├── ResetConfirmModal.jsx # Reset confirmation
+│   │   ├── SuccessToast.jsx      # Success notification
+│   │   ├── Tooltip.jsx           # Tooltip component
+│   │   └── DiceFace.jsx          # Dice face display
+│   ├── App.jsx                    # App root
+│   ├── App.css                    # Global styles
+│   └── main.jsx                   # Entry point
+├── public/                        # Static assets
+├── package.json
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+└── README.md
