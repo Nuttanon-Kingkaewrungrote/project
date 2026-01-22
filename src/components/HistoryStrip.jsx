@@ -162,7 +162,7 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
                     <span className={`text-lg font-bold ${hiLoColor}`}>
                       {roll.join('')}
                     </span>
-                    <span className="text-gray-600">Delete this input?</span>
+                    <span className="text-gray-600">Are you sure you want to delete this input?</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <button
