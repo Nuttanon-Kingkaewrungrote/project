@@ -27,6 +27,21 @@ const HiLoStatistics = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [showHistory, setShowHistory] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [scale, setScale] = useState(1);
+
+  // Calculate scale based on viewport
+  useEffect(() => {
+    const calculateScale = () => {
+      const widthScale = (window.innerWidth - 40) / 798;
+      const heightScale = (window.innerHeight - 40) / 1034;
+      const newScale = Math.min(widthScale, heightScale, 1);
+      setScale(newScale);
+    };
+
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+    return () => window.removeEventListener('resize', calculateScale);
+  }, []);
 
   // Save history to localStorage whenever it changes
   useEffect(() => {
@@ -226,15 +241,16 @@ const HiLoStatistics = () => {
   const statsRows = buildStatsRows();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-4 flex items-start justify-center overflow-y-auto">
+    <div className="min-h-screen bg-gray-100 flex items-start justify-center overflow-x-hidden">
       {/* Gradient Border Wrapper */}
       <div 
-        className="rounded-3xl p-4 shadow-2xl mx-auto my-3 origin-top"
+        className="rounded-3xl p-4 shadow-2xl my-2"
         style={{
           width: '798px',
           minHeight: '1034px',
           background: 'linear-gradient(to bottom, #FFFFFF, #EBEFF7, #F6F3FF)',
-          transform: 'scale(min(1, calc((100vw - 32px) / 798)))',
+          transform: `scale(${scale})`,
+          transformOrigin: 'top center',
         }}
       >
         <div className="mx-auto" style={{width: '734px'}}>
@@ -251,13 +267,13 @@ const HiLoStatistics = () => {
             </p>
           </div>
 
-          {/* Last Roll Display */}
+          {/* Last Roll Display - Responsive */}
           <LastRollDisplay 
             lastRoll={lastRoll} 
             historyLength={history.length}
           />
 
-          {/* Input Section */}
+          {/* Input Section - Responsive */}
           <DiceInput
             manualInput={manualInput}
             setManualInput={setManualInput}
