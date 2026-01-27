@@ -29,20 +29,20 @@ const DiceInput = ({
   };
 
   const handleInputChange = (e) => {
-    const v = e.target.value.replace(/\D/g, "");
-    if (v.length <= 3) {
-      setManualInput(v);
-      // Check if input is complete (3 digits) and all valid
-      if (v.length === 3) {
-        const dice = v.split("").map(Number);
-        if (dice.every(d => d >= 1 && d <= 6)) {
-          setHasError(false);
-        } else {
-          setHasError(true);
-        }
+    const v = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    
+    // Filter out any digits that are 0 or greater than 6
+    const validDigits = v.split('').filter(d => d >= '1' && d <= '6').join('');
+    
+    if (validDigits.length <= 3) {
+      setManualInput(validDigits);
+      
+      // Check if input is complete (3 digits)
+      if (validDigits.length === 3) {
+        setHasError(false);
       } else {
-        // Not complete, show red border
-        setHasError(v.length > 0);
+        // Not complete, show red border if has partial input
+        setHasError(validDigits.length > 0);
       }
     }
   };

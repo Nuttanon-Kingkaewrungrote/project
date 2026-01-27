@@ -246,7 +246,7 @@ const HistoryStrip = ({ history, fullView = false, onEdit, onDelete }) => {
                   ? 'bg-blue-100 text-blue-700 border border-blue-200' 
                   : 'bg-red-100 text-red-700 border border-red-200'
               }`}
-            >
+              >
               {roll.join('')}
             </div>
           );
