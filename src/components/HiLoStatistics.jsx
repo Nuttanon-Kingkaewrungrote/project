@@ -48,43 +48,107 @@ const HiLoStatistics = () => {
     localStorage.setItem('diceHistory', JSON.stringify(history));
   }, [history]);
 
-  // Calculate all statistics
-  const calculateStats = useCallback(() => {
-    const stats = {
+  // Helper: Check if pattern matches (all permutations)
+  const matchesTriple = (roll1, roll2) => {
+    const sorted1 = [...roll1].sort().join('');
+    const sorted2 = [...roll2].sort().join('');
+    return sorted1 === sorted2;
+  };
+
+  // Helper: Check if has any matching pair
+  const matchesPair = (roll1, roll2) => {
+    const pairs1 = new Set();
+    const sorted1 = [...roll1].sort();
+    pairs1.add([sorted1[0], sorted1[1]].sort().join(''));
+    pairs1.add([sorted1[0], sorted1[2]].sort().join(''));
+    pairs1.add([sorted1[1], sorted1[2]].sort().join(''));
+
+    const pairs2 = new Set();
+    const sorted2 = [...roll2].sort();
+    pairs2.add([sorted2[0], sorted2[1]].sort().join(''));
+    pairs2.add([sorted2[0], sorted2[2]].sort().join(''));
+    pairs2.add([sorted2[1], sorted2[2]].sort().join(''));
+
+    for (let p of pairs1) {
+      if (pairs2.has(p)) return true;
+    }
+    return false;
+  };
+
+  // Helper: Check if sum matches
+  const matchesSum = (roll1, roll2) => {
+    const sum1 = roll1.reduce((a, b) => a + b, 0);
+    const sum2 = roll2.reduce((a, b) => a + b, 0);
+    return sum1 === sum2;
+  };
+
+  // Calculate predictions based on last roll
+  const calculatePredictions = useCallback(() => {
+    if (!lastRoll || history.length < 2) {
+      return {
+        faceCount: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
+        pairs: {},
+        triples: {},
+        sums: {},
+        totalMatches: 0
+      };
+    }
+
+    const predictions = {
       faceCount: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
       pairs: {},
       triples: {},
-      sums: {}
+      sums: {},
+      totalMatches: 0
     };
 
-    history.forEach(roll => {
-      const uniqueFaces = [...new Set(roll)];
-      uniqueFaces.forEach(face => {
-        stats.faceCount[face]++;
-      });
+    // Loop through history to find patterns matching lastRoll
+    for (let i = 0; i < history.length - 1; i++) {
+      const currentRoll = history[i];
+      const nextRoll = history[i + 1];
 
-      const sum = roll.reduce((a, b) => a + b, 0);
-      stats.sums[sum] = (stats.sums[sum] || 0) + 1;
+      // Check if current roll matches any pattern with lastRoll (ไม่รวม single ในการ match)
+      const hasTripleMatch = matchesTriple(currentRoll, lastRoll);
+      const hasPairMatch = matchesPair(currentRoll, lastRoll);
+      const hasSumMatch = matchesSum(currentRoll, lastRoll);
 
-      const sorted = [...roll].sort((a, b) => a - b);
-      const allPairs = [
-        [sorted[0], sorted[1]].sort((a, b) => a - b).join(''),
-        [sorted[0], sorted[2]].sort((a, b) => a - b).join(''),
-        [sorted[1], sorted[2]].sort((a, b) => a - b).join('')
-      ];
+      // If ANY pattern matches (ไม่รวม single), count what came next
+      // แต่ไม่นับถ้า nextRoll คือ lastRoll เอง (เช็คว่าเป็น index ของ lastRoll)
+      const isNextRollTheLastOne = (i + 1 === history.length - 1);
       
-      const uniquePairs = [...new Set(allPairs)];
-      
-      uniquePairs.forEach(pairKey => {
-        stats.pairs[pairKey] = (stats.pairs[pairKey] || 0) + 1;
-      });
+      if ((hasTripleMatch || hasPairMatch || hasSumMatch) && !isNextRollTheLastOne) {
+        predictions.totalMatches++;
 
-      const tripleKey = sorted.join('');
-      stats.triples[tripleKey] = (stats.triples[tripleKey] || 0) + 1;
-    });
+        // Count singles (unique faces only - แสดงแต่ไม่นับใน totalMatches)
+        const uniqueFaces = [...new Set(nextRoll)];
+        uniqueFaces.forEach(face => {
+          predictions.faceCount[face]++;
+        });
 
-    return stats;
-  }, [history]);
+        // Count pairs
+        const sorted = [...nextRoll].sort((a, b) => a - b);
+        const allPairs = [
+          [sorted[0], sorted[1]].sort((a, b) => a - b).join(''),
+          [sorted[0], sorted[2]].sort((a, b) => a - b).join(''),
+          [sorted[1], sorted[2]].sort((a, b) => a - b).join('')
+        ];
+        const uniquePairs = [...new Set(allPairs)];
+        uniquePairs.forEach(pairKey => {
+          predictions.pairs[pairKey] = (predictions.pairs[pairKey] || 0) + 1;
+        });
+
+        // Count triples
+        const tripleKey = sorted.join('');
+        predictions.triples[tripleKey] = (predictions.triples[tripleKey] || 0) + 1;
+
+        // Count sums
+        const sum = nextRoll.reduce((a, b) => a + b, 0);
+        predictions.sums[sum] = (predictions.sums[sum] || 0) + 1;
+      }
+    }
+
+    return predictions;
+  }, [history, lastRoll]);
 
   const handleEditHistory = (index, newDice) => {
     const newHistory = [...history];
@@ -103,7 +167,7 @@ const HiLoStatistics = () => {
     }
   };
 
-  const stats = calculateStats();
+  const predictions = calculatePredictions();
 
   const handleManualEntrySingle = () => {
     if (manualInput.length !== 3) {
@@ -141,15 +205,15 @@ const HiLoStatistics = () => {
   };
 
   const getFrequency = (count) => {
-    if (history.length === 0) return '-';
-    const pct = ((count / history.length) * 100).toFixed(0);
-    return `${count}/${history.length} = ${pct}%`;
+    if (predictions.totalMatches === 0) return '-';
+    const pct = ((count / predictions.totalMatches) * 100).toFixed(0);
+    return `${count}/${predictions.totalMatches} = ${pct}%`;
   };
 
   const getFaceFrequency = (count) => {
-    if (history.length === 0) return '-';
-    const pct = ((count / history.length) * 100).toFixed(0);
-    return `${count}/${history.length} = ${pct}%`;
+    if (predictions.totalMatches === 0) return '-';
+    const pct = ((count / predictions.totalMatches) * 100).toFixed(0);
+    return `${count}/${predictions.totalMatches} = ${pct}%`;
   };
 
   // Get tooltip text based on active filter
@@ -174,13 +238,16 @@ const HiLoStatistics = () => {
 
     if (activeFilter === 'all' || activeFilter === 'single') {
       let faceFirstRow = true;
+      // เรียง 1-6 ตามลำดับ
       for (let i = 1; i <= 6; i++) {
-        if (stats.faceCount[i] > 0) {
+        if (predictions.faceCount[i] > 0) {
           rows.push({
             dice: String(i),
             label: (faceFirstRow && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าแต่ละหน้า' : '',
-            frequency: getFaceFrequency(stats.faceCount[i]),
-            type: 'single'
+            frequency: getFaceFrequency(predictions.faceCount[i]),
+            type: 'single',
+            sortValue: i, // ใช้สำหรับ sort
+            count: predictions.faceCount[i] // เพิ่ม count สำหรับ sort by %
           });
           faceFirstRow = false;
         }
@@ -188,9 +255,9 @@ const HiLoStatistics = () => {
     }
 
     if (activeFilter === 'all' || activeFilter === 'pair') {
-      const pairEntries = Object.entries(stats.pairs)
+      const pairEntries = Object.entries(predictions.pairs)
         .filter(entry => entry[1] > 0)
-        .sort((a, b) => a[0].localeCompare(b[0]));
+        .sort((a, b) => a[0].localeCompare(b[0])); // เรียงตามลำดับ 11, 12, 13, ...
       
       pairEntries.forEach((entry, idx) => {
         const pairFormatted = entry[0].split('').join(',');
@@ -198,16 +265,17 @@ const HiLoStatistics = () => {
           dice: pairFormatted,
           label: (idx === 0 && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าที่เป็นคู่' : '',
           frequency: getFrequency(entry[1]),
-          type: 'pair'
+          type: 'pair',
+          sortValue: entry[0], // ใช้สำหรับ sort
+          count: entry[1]
         });
       });
     }
 
     if (activeFilter === 'all' || activeFilter === 'triple') {
-      const tripleEntries = Object.entries(stats.triples)
+      const tripleEntries = Object.entries(predictions.triples)
         .filter(entry => entry[1] > 0)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
+        .sort((a, b) => a[0].localeCompare(b[0])); // เรียงตามลำดับเลข (ปกติ)
       
       tripleEntries.forEach((entry, idx) => {
         const tripleFormatted = entry[0].split('').join(',');
@@ -215,22 +283,26 @@ const HiLoStatistics = () => {
           dice: tripleFormatted,
           label: (idx === 0 && activeFilter === 'all') ? 'ผลลัพธ์ของลูกเต๋าสามลูก' : '',
           frequency: getFrequency(entry[1]),
-          type: 'triple'
+          type: 'triple',
+          sortValue: entry[0], // ใช้สำหรับ sort
+          count: entry[1]
         });
       });
     }
 
     if (activeFilter === 'all' || activeFilter === 'sum') {
-      const sumEntries = Object.entries(stats.sums)
+      const sumEntries = Object.entries(predictions.sums)
         .filter(entry => entry[1] > 0)
-        .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+        .sort((a, b) => parseInt(a[0]) - parseInt(b[0])); // เรียง 3-18
       
       sumEntries.forEach((entry, idx) => {
         rows.push({
           dice: `Sum ${entry[0]}`,
           label: (idx === 0 && activeFilter === 'all') ? 'ผลรวมของค่าลูกเต๋า' : '',
           frequency: getFrequency(entry[1]),
-          type: 'sum'
+          type: 'sum',
+          sortValue: parseInt(entry[0]), // ใช้สำหรับ sort
+          count: entry[1]
         });
       });
     }
@@ -259,11 +331,11 @@ const HiLoStatistics = () => {
           <div className="mb-4 text-center space-y-4">
             <div className="border border-blue-600 bg-blue-600 rounded-xl h-[72px] flex items-center justify-center">
               <h1 className="text-2xl font-bold text-white">
-                🎲 Dice Tracker Dashboard
+                🎲 Dice Prediction Dashboard
               </h1>
             </div>
             <p className="font-normal text-gray-500">
-              Analyze dice frequency patterns from your input data
+              Predict next dice patterns based on historical data
             </p>
           </div>
 
@@ -306,6 +378,8 @@ const HiLoStatistics = () => {
                 activeFilter={activeFilter}
                 getTooltipText={getTooltipText}
                 historyLength={history.length}
+                isPrediction={true}
+                totalMatches={predictions.totalMatches}
               />
             </>
           ) : (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Tooltip from './Tooltip';
 
-const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) => {
+const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength, isPrediction = false, totalMatches = 0 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [sortOrder, setSortOrder] = useState('normal'); // 'normal' = เรียงตามปกติ, 'desc' = มากไปน้อย
 
@@ -19,13 +19,14 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
   // Sort statsRows by frequency only if sortOrder is 'desc'
   const getSortedRows = () => {
     if (sortOrder === 'normal') {
-      return statsRows; // Return original order
+      return statsRows; // Return original order (เรียงตามเลข)
     }
 
-    // Sort by percentage (desc)
+    // Sort by count/percentage (desc)
     return [...statsRows].sort((a, b) => {
-      const percentA = getPercentage(a.frequency);
-      const percentB = getPercentage(b.frequency);
+      // ใช้ count ที่เก็บไว้ใน row
+      const countA = a.count || getPercentage(a.frequency);
+      const countB = b.count || getPercentage(b.frequency);
       
       // Sort by type first (to keep categories together in 'all' view)
       const typeOrder = { single: 1, pair: 2, triple: 3, sum: 4 };
@@ -36,8 +37,8 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
         return typeCompare;
       }
       
-      // Within same type, sort by percentage (มากไปน้อย)
-      return percentB - percentA;
+      // Within same type, sort by count (มากไปน้อย)
+      return countB - countA;
     });
   };
 
@@ -103,6 +104,20 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
   };
 
   const displayRows = getGroupedAndSortedRows();
+
+  // Get empty state message
+  const getEmptyMessage = () => {
+    if (historyLength === 0) {
+      return 'กรุณาใส่ตัวเลข และกด Enter เพื่อเริ่มบันทึก';
+    }
+    if (isPrediction && historyLength < 2) {
+      return 'ต้องการข้อมูลอย่างน้อย 2 รายการเพื่อทำนาย';
+    }
+    if (isPrediction && totalMatches === 0) {
+      return 'ไม่พบรูปแบบที่ตรงกันในประวัติ';
+    }
+    return 'ไม่มีข้อมูลในหมวดนี้';
+  };
 
   return (
     <div 
@@ -181,9 +196,7 @@ const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength }) 
               {displayRows.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="py-8 text-center text-gray-400">
-                    {historyLength === 0
-                      ? 'กรุณาใส่ตัวเลข และกด Enter เพื่อเริ่มบันทึก'
-                      : 'ไม่มีข้อมูลในหมวดนี้'}
+                    {getEmptyMessage()}
                   </td>
                 </tr>
               ) : (
