@@ -3,7 +3,7 @@ import Tooltip from './Tooltip';
 
 const StatsTable = ({ statsRows, activeFilter, getTooltipText, historyLength, isPrediction = false, totalMatches = 0 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [sortOrder, setSortOrder] = useState('normal'); // 'normal' = เรียงตามปกติ, 'desc' = มากไปน้อย
+  const [sortOrder, setSortOrder] = useState('desc'); // 'normal' = เรียงตามปกติ, 'desc' = มากไปน้อย
 
   const toggleSort = () => {
     setSortOrder(prev => prev === 'normal' ? 'desc' : 'normal');
