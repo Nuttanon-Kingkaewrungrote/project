@@ -27,21 +27,15 @@ const HiLoStatistics = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [showHistory, setShowHistory] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
-  const [scale, setScale] = useState(1);
+  
+  // คำนวณ scale ครั้งเดียวตอน mount - ไม่ตอบสนอง resize
+  const [scale] = useState(() => {
+    const widthScale = (window.innerWidth - 40) / 798;
+    const heightScale = (window.innerHeight - 40) / 1034;
+    return Math.min(widthScale, heightScale, 1);
+  });
 
-  // Calculate scale based on viewport
-  useEffect(() => {
-    const calculateScale = () => {
-      const widthScale = (window.innerWidth - 40) / 798;
-      const heightScale = (window.innerHeight - 40) / 1034;
-      const newScale = Math.min(widthScale, heightScale, 1);
-      setScale(newScale);
-    };
-
-    calculateScale();
-    window.addEventListener('resize', calculateScale);
-    return () => window.removeEventListener('resize', calculateScale);
-  }, []);
+  // ไม่มี useEffect สำหรับ resize - คำนวณครั้งเดียวเท่านั้น
 
   // Save history to localStorage whenever it changes
   useEffect(() => {
