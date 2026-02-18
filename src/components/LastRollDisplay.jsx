@@ -3,7 +3,7 @@ import DiceFace from './DiceFace';
 
 const LastRollDisplay = ({ lastRoll, historyLength }) => {
   return (
-    <div className="flex items-center gap-4 mb-6">
+    <div className="flex items-center gap-4 mb-5">
       {/* Dice + Result */}
       <div 
         className="flex items-center justify-between bg-slate-50 border border-neutral-300 px-10 py-5 rounded-xl"

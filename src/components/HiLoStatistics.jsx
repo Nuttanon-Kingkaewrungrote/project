@@ -5,6 +5,7 @@ import FilterButton from './FilterButton';
 import StatsTable from './StatsTable';
 import HistoryStrip from './HistoryStrip';
 import ResetConfirmModal from './ResetConfirmModal';
+import StatsCards from './Statscards';
 
 const HiLoStatistics = () => {
   // Load history from localStorage on mount
@@ -28,10 +29,10 @@ const HiLoStatistics = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   
-  // คำนวณ scale ครั้งเดียวตอน mount - ไม่ตอบสนอง resize
+  // คำนวณ scale ครั้งเดียวตอน mount - ปรับความสูงเป็น 1125px (เพิ่มจาก 1034px)
   const [scale] = useState(() => {
     const widthScale = (window.innerWidth - 40) / 798;
-    const heightScale = (window.innerHeight - 40) / 1034;
+    const heightScale = (window.innerHeight - 40) / 1125; // เพิ่มความสูงรองรับ StatsCards
     return Math.min(widthScale, heightScale, 1);
   });
 
@@ -308,12 +309,12 @@ const HiLoStatistics = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-start justify-center overflow-x-hidden">
-      {/* Gradient Border Wrapper */}
+      {/* Gradient Border Wrapper - ปรับความสูงเป็น 1125px */}
       <div 
         className="rounded-3xl p-4 shadow-2xl my-2"
         style={{
           width: '798px',
-          minHeight: '1034px',
+          minHeight: '1125px', // เพิ่มจาก 1034px
           background: 'linear-gradient(to bottom, #FFFFFF, #EBEFF7, #F6F3FF)',
           transform: `scale(${scale})`,
           transformOrigin: 'top center',
@@ -338,6 +339,9 @@ const HiLoStatistics = () => {
             lastRoll={lastRoll} 
             historyLength={history.length}
           />
+
+          {/* Stats Cards - Even/Odd/Hi/Low */}
+          <StatsCards history={history} />
 
           {/* Input Section - Responsive */}
           <DiceInput
