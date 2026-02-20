@@ -18,3 +18,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* container สามารถ scroll ได้แต่ไม่แสดง scrollbar */
+#root {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+}
+
+/* ซ่อน scrollbar - Chrome, Safari, Edge */
+#root::-webkit-scrollbar {
+  display: none;
+}
+
+/* ซ่อน scrollbar - Firefox */
+#root {
+  scrollbar-width: none;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  overflow: hidden;
+  height: 100vh;
+}

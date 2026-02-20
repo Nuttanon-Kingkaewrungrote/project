@@ -102,16 +102,17 @@ const HiLoStatistics = () => {
       const currentRoll = history[i];
       const nextRoll = history[i + 1];
 
-      // Check if current roll matches any pattern with lastRoll (ไม่รวม single ในการ match)
+      // Check if current roll matches any pattern with lastRoll
       const hasTripleMatch = matchesTriple(currentRoll, lastRoll);
       const hasPairMatch = matchesPair(currentRoll, lastRoll);
       const hasSumMatch = matchesSum(currentRoll, lastRoll);
 
-      // If ANY pattern matches (ไม่รวม single), count what came next
-      // แต่ไม่นับถ้า nextRoll คือ lastRoll เอง (เช็คว่าเป็น index ของ lastRoll)
+      // **เปลี่ยนตรงนี้: ไม่นับถ้า match แค่ Sum เท่านั้น**
+      // ต้อง match Triple หรือ Pair ด้วย
       const isNextRollTheLastOne = (i + 1 === history.length - 1);
       
-      if ((hasTripleMatch || hasPairMatch || hasSumMatch) && !isNextRollTheLastOne) {
+      // เงื่อนไขใหม่: (Triple OR Pair) - ไม่รวม Sum alone
+      if ((hasTripleMatch || hasPairMatch) && !isNextRollTheLastOne) {
         predictions.totalMatches++;
 
         // Count singles (unique faces only - แสดงแต่ไม่นับใน totalMatches)
